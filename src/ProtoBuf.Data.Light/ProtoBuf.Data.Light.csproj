@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6A20AFDA-E741-43FA-A833-49BAEF68665C}</ProjectGuid>
+    <ProjectGuid>{EC6D4949-468F-4991-BD40-50667F01FC8D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProtoBuf.Data.Light</RootNamespace>
@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -39,7 +42,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TypeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataSerializer.cs" />
+    <Compile Include="ProtoBufDataBuffer.cs" />
+    <Compile Include="ProtoBufFieldInfo.cs" />
+    <Compile Include="ProtoBufDataReader.cs" />
+    <Compile Include="ProtoBufDataType.cs" />
+    <Compile Include="ProtoBufDataWriter.cs" />
+    <Compile Include="Throw.cs" />
+    <Compile Include="UnsupportedDataTypeException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
