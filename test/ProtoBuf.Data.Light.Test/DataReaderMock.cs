@@ -51,18 +51,18 @@ namespace ProtoBuf.Data.Light.Test
 
             this.AddSchemaRow(schemaTable, "bool", 0, typeof(bool));
             this.AddSchemaRow(schemaTable, "byte", 1, typeof(byte));
-            this.AddSchemaRow(schemaTable, "DateTime", 2, typeof(DateTime));
-            this.AddSchemaRow(schemaTable, "double", 3, typeof(double));
-            this.AddSchemaRow(schemaTable, "float", 4, typeof(float));
-            this.AddSchemaRow(schemaTable, "Guid", 5, typeof(Guid));
-            this.AddSchemaRow(schemaTable, "int", 6, typeof(int));
-            this.AddSchemaRow(schemaTable, "long", 7, typeof(long));
-            this.AddSchemaRow(schemaTable, "short", 8, typeof(short));
-            this.AddSchemaRow(schemaTable, "string", 9, typeof(string));
-            this.AddSchemaRow(schemaTable, "char", 10, typeof(char));
-            this.AddSchemaRow(schemaTable, "decimal", 11, typeof(decimal));
-            this.AddSchemaRow(schemaTable, "bytearray", 12, typeof(byte[]));
-            this.AddSchemaRow(schemaTable, "chararray", 13, typeof(char[]));
+            this.AddSchemaRow(schemaTable, "bytearray", 2, typeof(byte[]));
+            this.AddSchemaRow(schemaTable, "char", 3, typeof(char));
+            this.AddSchemaRow(schemaTable, "chararray", 4, typeof(char[]));
+            this.AddSchemaRow(schemaTable, "DateTime", 5, typeof(DateTime));
+            this.AddSchemaRow(schemaTable, "decimal", 6, typeof(decimal));
+            this.AddSchemaRow(schemaTable, "double", 7, typeof(double));
+            this.AddSchemaRow(schemaTable, "float", 8, typeof(float));
+            this.AddSchemaRow(schemaTable, "Guid", 9, typeof(Guid));
+            this.AddSchemaRow(schemaTable, "int", 10, typeof(int));
+            this.AddSchemaRow(schemaTable, "long", 11, typeof(long));
+            this.AddSchemaRow(schemaTable, "short", 12, typeof(short));
+            this.AddSchemaRow(schemaTable, "string", 13, typeof(string));
             this.AddSchemaRow(schemaTable, "TimeSpan", 14, typeof(TimeSpan));
 
             foreach (DataColumn column in schemaTable.Columns)
@@ -91,7 +91,11 @@ namespace ProtoBuf.Data.Light.Test
             {
                 true,
                 byte.MinValue,
+                Encoding.UTF8.GetBytes("bytes min"),
+                char.MinValue,
+                "chars min".ToArray(),
                 DateTime.MinValue,
+                decimal.MinValue,
                 double.MinValue,
                 float.MinValue,
                 new Guid("00000000-0000-0000-0000-000000000000"),
@@ -99,10 +103,6 @@ namespace ProtoBuf.Data.Light.Test
                 long.MinValue,
                 short.MinValue,
                 "string min",
-                char.MinValue,
-                decimal.MinValue,
-                Encoding.UTF8.GetBytes("bytes min"),
-                "chars min".ToArray(),
                 TimeSpan.MinValue
             };
 
@@ -110,7 +110,11 @@ namespace ProtoBuf.Data.Light.Test
             {
                 true,
                 byte.MaxValue,
+                Encoding.UTF8.GetBytes("bytes max"),
+                char.MaxValue,
+                "chars max".ToArray(),
                 DateTime.MaxValue,
+                decimal.MaxValue,
                 double.MaxValue,
                 float.MaxValue,
                 new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
@@ -118,10 +122,6 @@ namespace ProtoBuf.Data.Light.Test
                 long.MaxValue,
                 short.MaxValue,
                 "string max",
-                char.MaxValue,
-                decimal.MaxValue,
-                Encoding.UTF8.GetBytes("bytes max"),
-                "chars max".ToArray(),
                 TimeSpan.MaxValue
             };
         }
