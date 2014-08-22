@@ -176,11 +176,11 @@ namespace ProtoBuf.Data.Light
             this.ThrowIfClosed();
             this.ThrowIfIndexOutOfRange(i);
 
-            var buffers = this.buffers[i].ByteArray;
+            var bytes = this.buffers[i].ByteArray;
 
-            length = Math.Min(length, buffers.Length - (int)fieldOffset);
+            length = Math.Min(length, bytes.Length - (int)fieldOffset);
 
-            Array.Copy(buffers, fieldOffset, buffer, bufferoffset, length);
+            Array.Copy(bytes, fieldOffset, buffer, bufferoffset, length);
 
             return length;
         }
@@ -198,11 +198,11 @@ namespace ProtoBuf.Data.Light
             this.ThrowIfClosed();
             this.ThrowIfIndexOutOfRange(i);
 
-            var buffers = this.buffers[i].CharArray;
+            var chars = this.buffers[i].CharArray;
 
-            length = Math.Min(length, buffers.Length - (int)fieldOffset);
+            length = Math.Min(length, chars.Length - (int)fieldOffset);
 
-            Array.Copy(buffers, fieldOffset, buffer, bufferoffset, length);
+            Array.Copy(chars, fieldOffset, buffer, bufferoffset, length);
 
             return length;
         }

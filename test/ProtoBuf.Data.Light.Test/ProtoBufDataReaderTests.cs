@@ -5,6 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Data;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace ProtoBuf.Data.Light.Test
 {
@@ -24,6 +26,30 @@ namespace ProtoBuf.Data.Light.Test
             memoryStream.Position = 0;
 
             this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
+        }
+
+        [TestClass]
+        public class TheDisposeMethod : ProtoBufDataReaderTests
+        {
+            [TestMethod, ExpectedException(typeof(ObjectDisposedException))]
+            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+                var memoryStream = new MemoryStream();
+
+                DataSerializer.Serialize(memoryStream, dataReaderMock);
+
+                memoryStream.Position = 0;
+
+                this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
+
+                // Act
+                protoBufDataReader.Dispose();
+
+                // Assert
+                memoryStream.Position = 0;
+            }
         }
 
         [TestClass]
@@ -100,6 +126,45 @@ namespace ProtoBuf.Data.Light.Test
                 for (int i = 0; i < protoBufDataReader.FieldCount; i++)
                 {
                     Assert.AreEqual(dataReaderMock.GetName(i), protoBufDataReader.GetName(i));
+                }
+            }
+        }
+
+        [TestClass]
+        public class TheGetDataTypeNameMethod : ProtoBufDataReaderTests
+        {
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            {
+                // Arrange
+                protoBufDataReader.Close();
+
+                // Act
+                protoBufDataReader.GetDataTypeName(0);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenIndexIsOutOfRange()
+            {
+                // Act
+                protoBufDataReader.GetDataTypeName(protoBufDataReader.FieldCount);
+            }
+
+            [TestMethod]
+            public void ShouldReturnCorrespondingDataTypeName()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+
+                dataReaderMock.Read();
+                protoBufDataReader.Read();
+
+                // Assert
+                Assert.AreEqual(dataReaderMock.FieldCount, protoBufDataReader.FieldCount);
+
+                for (int i = 0; i < protoBufDataReader.FieldCount; i++)
+                {
+                    Assert.AreEqual(dataReaderMock.GetDataTypeName(i), protoBufDataReader.GetDataTypeName(i));
                 }
             }
         }
@@ -282,6 +347,47 @@ namespace ProtoBuf.Data.Light.Test
         }
 
         [TestClass]
+        public class TheGetBytesMethod : ProtoBufDataReaderTests
+        {
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            {
+                // Arrange
+                protoBufDataReader.Close();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 0, new byte[0], 0, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenIndexIsOutOfRange()
+            {
+                // Act
+                protoBufDataReader.GetBytes(protoBufDataReader.FieldCount, 0, new byte[0], 0, 1);
+            }
+
+            [TestMethod]
+            public void ShouldReturnCorrespondingValue()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+
+                protoBufDataReader.Read();
+                dataReaderMock.Read();
+
+                var bufferMock = new byte[9];
+                var buffer = new byte[9];
+                //9
+                
+                // Assert
+                dataReaderMock.GetBytes(2, 0, bufferMock, 0, 9);
+                protoBufDataReader.GetBytes(2, 0, buffer, 0, 9);
+
+                Assert.AreEqual(Encoding.UTF8.GetString(bufferMock), Encoding.UTF8.GetString(buffer));
+            }
+        }
+
+        [TestClass]
         public class TheGetCharMethod : ProtoBufDataReaderTests
         {
             [TestMethod, ExpectedException(typeof(InvalidOperationException))]
@@ -312,6 +418,47 @@ namespace ProtoBuf.Data.Light.Test
 
                 // Assert
                 Assert.AreEqual(dataReaderMock.GetChar(3), protoBufDataReader.GetChar(3));
+            }
+        }
+
+        [TestClass]
+        public class TheGetCharsMethod : ProtoBufDataReaderTests
+        {
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            {
+                // Arrange
+                protoBufDataReader.Close();
+
+                // Act
+                protoBufDataReader.GetChars(4, 0, new char[0], 0, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenIndexIsOutOfRange()
+            {
+                // Act
+                protoBufDataReader.GetChars(protoBufDataReader.FieldCount, 0, new char[0], 0, 1);
+            }
+
+            [TestMethod]
+            public void ShouldReturnCorrespondingValue()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+
+                protoBufDataReader.Read();
+                dataReaderMock.Read();
+
+                var bufferMock = new char[9];
+                var buffer = new char[9];
+                //9
+
+                // Assert
+                dataReaderMock.GetChars(4, 0, bufferMock, 0, 9);
+                protoBufDataReader.GetChars(4, 0, buffer, 0, 9);
+
+                Assert.AreEqual(new string(bufferMock), new string(buffer));
             }
         }
 

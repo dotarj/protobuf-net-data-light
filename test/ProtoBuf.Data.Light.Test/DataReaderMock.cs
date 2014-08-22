@@ -196,7 +196,13 @@ namespace ProtoBuf.Data.Light.Test
 
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
-            throw new NotImplementedException();
+            var bytes = (byte[])this.values[currentResult][currentRow][i];
+
+            length = Math.Min(length, bytes.Length - (int)fieldOffset);
+
+            Array.Copy(bytes, fieldOffset, buffer, bufferoffset, length);
+
+            return length;
         }
 
         public char GetChar(int i)
@@ -204,9 +210,15 @@ namespace ProtoBuf.Data.Light.Test
             return (char)this.values[currentResult][currentRow][i];
         }
 
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        public long GetChars(int i, long fieldOffset, char[] buffer, int bufferoffset, int length)
         {
-            throw new NotImplementedException();
+            var chars = (char[])this.values[currentResult][currentRow][i];
+
+            length = Math.Min(length, chars.Length - (int)fieldOffset);
+
+            Array.Copy(chars, fieldOffset, buffer, bufferoffset, length);
+
+            return length;
         }
 
         public IDataReader GetData(int i)
