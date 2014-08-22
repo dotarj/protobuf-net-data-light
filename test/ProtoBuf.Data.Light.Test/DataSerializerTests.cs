@@ -17,7 +17,7 @@ namespace ProtoBuf.Data.Light.Test
         [TestInitialize]
         public void TestInitialize()
         {
-            var dataReaderMock = new DataReaderMock();
+            var dataReaderMock = new DataReaderMock(false);
             var memoryStream = new MemoryStream();
 
             DataSerializer.Serialize(memoryStream, dataReaderMock);
@@ -34,7 +34,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionIfStreamIsNull()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock();
+                var dataReaderMock = new DataReaderMock(false);
 
                 // Act
                 DataSerializer.Serialize(null, dataReaderMock);
@@ -51,30 +51,67 @@ namespace ProtoBuf.Data.Light.Test
             }
 
             [TestMethod]
-            public void ShouldDeserializeTwoRows()
+            public void ShouldDeserializeAllResults()
             {
                 // Arrange
-                var readCount = 0;
+                var dataReaderMock = new DataReaderMock(true);
+                var memoryStream = new MemoryStream();
+
+                DataSerializer.Serialize(memoryStream, dataReaderMock);
+
+                memoryStream.Position = 0;
+
+                this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
+
+                dataReaderMock = new DataReaderMock(true);
+
+                // Assert
+                AssertResult(dataReaderMock);
+
+                Assert.IsTrue(this.protoBufDataReader.NextResult());
+
+                dataReaderMock.NextResult();
+
+                AssertResult(dataReaderMock);
+
+            }
+
+            [TestMethod]
+            public void ShouldDeserializeAllRows()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(true);
+                
+                var protoBufReadCount = 0;
+                var mockReadCount = 0;
 
                 // Act
                 while (protoBufDataReader.Read())
                 {
-                    readCount++;
+                    protoBufReadCount++;
+                }
+
+                while (dataReaderMock.Read())
+                {
+                    mockReadCount++;
                 }
 
                 // Assert
-                Assert.AreEqual(2, readCount);
+                Assert.AreEqual(mockReadCount, protoBufReadCount);
             }
 
             [TestMethod]
             public void ShouldDeserializeValidProperties()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock();
+                var dataReaderMock = new DataReaderMock(false);
 
                 // Assert
-                dataReaderMock = new DataReaderMock();
+                AssertResult(dataReaderMock);
+            }
 
+            private void AssertResult(DataReaderMock dataReaderMock)
+            {
                 while (protoBufDataReader.Read())
                 {
                     dataReaderMock.Read();
@@ -97,7 +134,7 @@ namespace ProtoBuf.Data.Light.Test
                 }
             }
 
-            [TestMethod]
+            //[TestMethod]
             public void Performance()
             {
                 var iterations = 100000;

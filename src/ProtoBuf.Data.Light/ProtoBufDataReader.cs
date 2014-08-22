@@ -79,9 +79,29 @@ namespace ProtoBuf.Data.Light
 
         public bool NextResult()
         {
-            // TODO: Implement...
+            this.ThrowIfClosed();
 
-            return false;
+            this.ReadRemainingRows();
+
+            this.buffers = null;
+            this.schemaTable = null;
+            this.fieldInfos.Clear();
+            this.fieldInfoByName.Clear();
+
+            this.ReadNextFieldHeader();
+
+            if (this.currentFieldHeader == 0)
+            {
+                this.IsClosed = true;
+
+                return false;
+            }
+
+            this.reachedEndOfCurrentResult = false;
+
+            this.ReadNextResult();
+
+            return true;
         }
 
         public bool Read()

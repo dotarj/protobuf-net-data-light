@@ -13,14 +13,23 @@ namespace ProtoBuf.Data.Light.Test
     public class DataReaderMock : IDataReader
     {
         private readonly DataTable schemaTable;
-        private readonly object[][] values;
+        private readonly List<List<object[]>> values;
 
         private int currentRow = -1;
+        private int currentResult = 0;
 
-        public DataReaderMock()
+        public DataReaderMock(bool multtpleResults)
         {
             schemaTable = this.BuildSchemaTable();
-            values = this.GetValues().ToArray();
+
+            if (multtpleResults)
+            {
+                values = new List<List<object[]>>() { this.GetValues().ToList(), this.GetValues().Reverse().ToList() };
+            }
+            else
+            {
+                values = new List<List<object[]>>() { this.GetValues().ToList() };
+            }
         }
 
         private DataTable BuildSchemaTable()
@@ -139,12 +148,19 @@ namespace ProtoBuf.Data.Light.Test
 
         public bool NextResult()
         {
+            if (currentResult < values.Count - 1)
+            {
+                currentResult++;
+
+                return true;
+            }
+
             return false;
         }
 
         public bool Read()
         {
-            if (currentRow < values.Length - 1)
+            if (currentRow < values[currentResult].Count - 1)
             {
                 currentRow++;
 
@@ -165,17 +181,17 @@ namespace ProtoBuf.Data.Light.Test
 
         public int FieldCount
         {
-            get { return this.values[0].Length; }
+            get { return this.values[currentResult][0].Length; }
         }
 
         public bool GetBoolean(int i)
         {
-            return (bool)this.values[currentRow][i];
+            return (bool)this.values[currentResult][currentRow][i];
         }
 
         public byte GetByte(int i)
         {
-            return (byte)this.values[currentRow][i];
+            return (byte)this.values[currentResult][currentRow][i];
         }
 
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
@@ -185,7 +201,7 @@ namespace ProtoBuf.Data.Light.Test
 
         public char GetChar(int i)
         {
-            return (char)this.values[currentRow][i];
+            return (char)this.values[currentResult][currentRow][i];
         }
 
         public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
@@ -205,17 +221,17 @@ namespace ProtoBuf.Data.Light.Test
 
         public DateTime GetDateTime(int i)
         {
-            return (DateTime)this.values[currentRow][i];
+            return (DateTime)this.values[currentResult][currentRow][i];
         }
 
         public decimal GetDecimal(int i)
         {
-            return (decimal)this.values[currentRow][i];
+            return (decimal)this.values[currentResult][currentRow][i];
         }
 
         public double GetDouble(int i)
         {
-            return (double)this.values[currentRow][i];
+            return (double)this.values[currentResult][currentRow][i];
         }
 
         public Type GetFieldType(int i)
@@ -225,27 +241,27 @@ namespace ProtoBuf.Data.Light.Test
 
         public float GetFloat(int i)
         {
-            return (float)this.values[currentRow][i];
+            return (float)this.values[currentResult][currentRow][i];
         }
 
         public Guid GetGuid(int i)
         {
-            return (Guid)this.values[currentRow][i];
+            return (Guid)this.values[currentResult][currentRow][i];
         }
 
         public short GetInt16(int i)
         {
-            return (short)this.values[currentRow][i];
+            return (short)this.values[currentResult][currentRow][i];
         }
 
         public int GetInt32(int i)
         {
-            return (int)this.values[currentRow][i];
+            return (int)this.values[currentResult][currentRow][i];
         }
 
         public long GetInt64(int i)
         {
-            return (long)this.values[currentRow][i];
+            return (long)this.values[currentResult][currentRow][i];
         }
 
         public string GetName(int i)
@@ -268,12 +284,12 @@ namespace ProtoBuf.Data.Light.Test
 
         public string GetString(int i)
         {
-            return (string)this.values[currentRow][i];
+            return (string)this.values[currentResult][currentRow][i];
         }
 
         public object GetValue(int i)
         {
-            return this.values[currentRow][i];
+            return this.values[currentResult][currentRow][i];
         }
 
         public int GetValues(object[] values)
@@ -283,7 +299,7 @@ namespace ProtoBuf.Data.Light.Test
 
         public bool IsDBNull(int i)
         {
-            return this.values[currentRow][i] == null;
+            return this.values[currentResult][currentRow][i] == null;
         }
 
         public object this[string name]
@@ -295,7 +311,7 @@ namespace ProtoBuf.Data.Light.Test
         {
             get
             {
-                return this.values[currentRow][i];
+                return this.values[currentResult][currentRow][i];
             }
         }
     }

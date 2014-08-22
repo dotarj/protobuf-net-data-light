@@ -16,7 +16,7 @@ namespace ProtoBuf.Data.Light.Test
         [TestInitialize]
         public void TestInitialize()
         {
-            var dataReaderMock = new DataReaderMock();
+            var dataReaderMock = new DataReaderMock(false);
             var memoryStream = new MemoryStream();
 
             DataSerializer.Serialize(memoryStream, dataReaderMock);
@@ -50,7 +50,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldReturnCorrespondingFieldType()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock();
+                var dataReaderMock = new DataReaderMock(false);
 
                 dataReaderMock.Read();
                 protoBufDataReader.Read();
@@ -89,7 +89,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldReturnCorrespondingName()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock();
+                var dataReaderMock = new DataReaderMock(false);
 
                 dataReaderMock.Read();
                 protoBufDataReader.Read();
@@ -128,7 +128,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldReturnCorrespondingOrdinal()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock();
+                var dataReaderMock = new DataReaderMock(false);
                 var schemaTableMock = dataReaderMock.GetSchemaTable();
 
                 // Assert
@@ -163,7 +163,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldReturnCorrespondingOrdinal()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock();
+                var dataReaderMock = new DataReaderMock(false);
 
                 // Assert
                 while (protoBufDataReader.Read())
@@ -195,7 +195,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldReturnSchemaTable()
             {
                 // Arrange
-                var schemaTableMock = new DataReaderMock().GetSchemaTable();
+                var schemaTableMock = new DataReaderMock(false).GetSchemaTable();
 
                 // Act
                 var schemaTable = protoBufDataReader.GetSchemaTable();
