@@ -497,25 +497,11 @@ namespace ProtoBuf.Data.Light
             return this.protoReader.ReadString();
         }
 
-        private int ReadOrdinal()
-        {
-            var field = this.protoReader.ReadFieldHeader();
-
-            return this.protoReader.ReadInt32();
-        }
-
         private ProtoBufDataType ReadDataType()
         {
             var field = this.protoReader.ReadFieldHeader();
 
             return (ProtoBufDataType)this.protoReader.ReadInt32();
-        }
-
-        private string ReadDataTypeName()
-        {
-            var field = this.protoReader.ReadFieldHeader();
-
-            return this.protoReader.ReadString();
         }
 
         private void ReadNextFieldHeader()
