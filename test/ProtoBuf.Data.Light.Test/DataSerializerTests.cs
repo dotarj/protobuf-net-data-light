@@ -134,7 +134,7 @@ namespace ProtoBuf.Data.Light.Test
                 }
             }
 
-            //[TestMethod]
+            [TestMethod]
             public void Performance()
             {
                 var iterations = 100000;
@@ -146,7 +146,7 @@ namespace ProtoBuf.Data.Light.Test
                 var originalDataReader = dataTable.CreateDataReader();
 
                 // Act
-                Console.WriteLine(string.Format("ProtoBuf.Data.Light: {0} ms", Benchmark.RunParallel(() =>
+                var protoBufDataLight = Benchmark.RunParallel(() =>
                 {
                     using (var memoryStream = new MemoryStream())
                     {
@@ -160,9 +160,11 @@ namespace ProtoBuf.Data.Light.Test
                         {
                         }
                     }
-                }, iterations).TotalMilliseconds));
+                }, iterations).TotalMilliseconds;
 
-                Console.WriteLine(string.Format("ProtoBuf.Data:       {0} ms", Benchmark.RunParallel(() =>
+                Console.WriteLine(string.Format("ProtoBuf.Data.Light: {0} ms", protoBufDataLight));
+
+                var protoBufData = Benchmark.RunParallel(() =>
                 {
                     using (var memoryStream = new MemoryStream())
                     {
@@ -176,7 +178,11 @@ namespace ProtoBuf.Data.Light.Test
                         {
                         }
                     }
-                }, iterations).TotalMilliseconds));
+                }, iterations).TotalMilliseconds;
+
+                Console.WriteLine(string.Format("ProtoBuf.Data: {0} ms", protoBufData));
+
+                Console.WriteLine(string.Format("{0} %", (int)(protoBufDataLight / protoBufData * 100)));
             }
         }
 

@@ -12,7 +12,5 @@ namespace ProtoBuf.Data.Light
         internal int Ordinal;
 
         internal Type DataType;
-
-        internal string DataTypeName;
     }
 }

@@ -12,7 +12,6 @@ namespace ProtoBuf.Data.Light
 {
     public class ProtoBufDataReader : IDataReader
     {
-        private readonly Dictionary<string, ProtoBufFieldInfo> fieldInfoByName = new Dictionary<string, ProtoBufFieldInfo>();
         private readonly List<ProtoBufFieldInfo> fieldInfos = new List<ProtoBufFieldInfo>();
         private readonly ProtoReader protoReader;
         private readonly Stream stream;
@@ -86,7 +85,6 @@ namespace ProtoBuf.Data.Light
             this.buffers = null;
             this.schemaTable = null;
             this.fieldInfos.Clear();
-            this.fieldInfoByName.Clear();
 
             this.ReadNextFieldHeader();
 
@@ -220,7 +218,7 @@ namespace ProtoBuf.Data.Light
             this.ThrowIfClosed();
             this.ThrowIfIndexOutOfRange(i);
 
-            return this.fieldInfos[i].DataTypeName;
+            return this.fieldInfos[i].DataType.Name;
         }
 
         public DateTime GetDateTime(int i)
@@ -307,14 +305,27 @@ namespace ProtoBuf.Data.Light
         {
             this.ThrowIfClosed();
 
-            ProtoBufFieldInfo fieldInfo;
+            var fieldInfo = this.GetFieldInfoByName(name);
 
-            if (!this.fieldInfoByName.TryGetValue(name, out fieldInfo))
+            if (fieldInfo == null)
             {
                 throw new IndexOutOfRangeException(name);
             }
 
             return fieldInfo.Ordinal;
+        }
+
+        private ProtoBufFieldInfo GetFieldInfoByName(string name)
+        {
+            foreach (var fieldInfo in fieldInfos)
+            {
+                if (name == fieldInfo.Name)
+                {
+                    return fieldInfo;
+                }
+            }
+
+            return null;
         }
 
         public string GetString(int i)
@@ -411,7 +422,7 @@ namespace ProtoBuf.Data.Light
 
                 schemaRow[columnName] = this.fieldInfos[i].Name;
                 schemaRow[columnOrdinal] = this.fieldInfos[i].Ordinal;
-                schemaRow[dataTypeName] = this.fieldInfos[i].DataTypeName;
+                schemaRow[dataTypeName] = this.fieldInfos[i].DataType.Name;
 
                 schemaTable.Rows.Add(schemaRow);
             }
@@ -448,33 +459,31 @@ namespace ProtoBuf.Data.Light
 
         private void ReadFieldInfos()
         {
+            var ordinal = 0;
+
             do
             {
-                this.ReadFieldInfo();
+                this.ReadFieldInfo(ordinal);
 
                 this.ReadNextFieldHeader();
+
+                ordinal++;
             }
             while (this.currentFieldHeader == 2);
         }
 
-        private void ReadFieldInfo()
+        private void ReadFieldInfo(int ordinal)
         {
             var fieldInfoToken = ProtoReader.StartSubItem(this.protoReader);
 
             var fieldInfo = new ProtoBufFieldInfo
             {
                 Name = this.ReadName(),
-                Ordinal = this.ReadOrdinal(),
-                DataType = TypeHelper.GetType(this.ReadDataType()),
-                DataTypeName = this.ReadDataTypeName()
+                Ordinal = ordinal,
+                DataType = TypeHelper.GetType(this.ReadDataType())
             };
 
             this.fieldInfos.Add(fieldInfo);
-
-            if (!this.fieldInfoByName.ContainsKey(fieldInfo.Name))
-            {
-                this.fieldInfoByName.Add(fieldInfo.Name, fieldInfo);
-            }
 
             this.protoReader.ReadFieldHeader();
 

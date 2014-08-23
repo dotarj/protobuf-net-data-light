@@ -43,9 +43,8 @@ namespace ProtoBuf.Data.Light
                 fieldInfos.Add(new ProtoBufFieldInfo
                 {
                     Name = dataReader.GetName(i),
-                    Ordinal = dataReader.GetOrdinal(dataReader.GetName(i)),
-                    DataType = dataReader.GetFieldType(i),
-                    DataTypeName = dataReader.GetDataTypeName(i)
+                    Ordinal = i,
+                    DataType = dataReader.GetFieldType(i)
                 });
             }
 
@@ -63,11 +62,7 @@ namespace ProtoBuf.Data.Light
                 ProtoWriter.WriteFieldHeader(1, WireType.String, writer);
                 ProtoWriter.WriteString(fieldInfo.Name, writer);
                 ProtoWriter.WriteFieldHeader(2, WireType.Variant, writer);
-                ProtoWriter.WriteInt32(fieldInfo.Ordinal, writer);
-                ProtoWriter.WriteFieldHeader(3, WireType.Variant, writer);
                 ProtoWriter.WriteInt32((int)TypeHelper.GetProtoBufDataType(fieldInfo.DataType), writer);
-                ProtoWriter.WriteFieldHeader(4, WireType.String, writer);
-                ProtoWriter.WriteString(fieldInfo.DataTypeName, writer);
 
                 ProtoWriter.EndSubItem(fieldInfoToken, writer);
             }
