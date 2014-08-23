@@ -64,6 +64,7 @@ namespace ProtoBuf.Data.Light.Test
             this.AddSchemaRow(schemaTable, "short", 12, typeof(short));
             this.AddSchemaRow(schemaTable, "string", 13, typeof(string));
             this.AddSchemaRow(schemaTable, "TimeSpan", 14, typeof(TimeSpan));
+            this.AddSchemaRow(schemaTable, "string (null)", 15, typeof(string));
 
             foreach (DataColumn column in schemaTable.Columns)
             {
@@ -103,7 +104,8 @@ namespace ProtoBuf.Data.Light.Test
                 long.MinValue,
                 short.MinValue,
                 "string min",
-                TimeSpan.MinValue
+                TimeSpan.MinValue,
+                null
             };
 
             yield return new object[]
@@ -122,7 +124,8 @@ namespace ProtoBuf.Data.Light.Test
                 long.MaxValue,
                 short.MaxValue,
                 "string max",
-                TimeSpan.MaxValue
+                TimeSpan.MaxValue,
+                null
             };
         }
 
@@ -306,7 +309,14 @@ namespace ProtoBuf.Data.Light.Test
 
         public int GetValues(object[] values)
         {
-            throw new NotImplementedException();
+            var length = values.Length < FieldCount ? values.Length : FieldCount;
+
+            for (var i = 0; i < length; i++)
+            {
+                values[i] = this.values[currentResult][currentRow][i];
+            }
+
+            return length;
         }
 
         public bool IsDBNull(int i)

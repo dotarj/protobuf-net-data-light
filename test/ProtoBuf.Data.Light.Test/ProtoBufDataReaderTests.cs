@@ -32,7 +32,7 @@ namespace ProtoBuf.Data.Light.Test
         public class TheDisposeMethod : ProtoBufDataReaderTests
         {
             [TestMethod, ExpectedException(typeof(ObjectDisposedException))]
-            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            public void ShouldThrowExceptionWhenDataReaderIsDisposed()
             {
                 // Arrange
                 var dataReaderMock = new DataReaderMock(false);
@@ -49,6 +49,30 @@ namespace ProtoBuf.Data.Light.Test
 
                 // Assert
                 memoryStream.Position = 0;
+            }
+        }
+
+        [TestClass]
+        public class TheNextResultMethod : ProtoBufDataReaderTests
+        {
+            [TestMethod]
+            public void ShouldCloseWhenNooMoreResults()
+            {
+                // Act
+                protoBufDataReader.NextResult();
+
+                // Assert
+                Assert.IsTrue(protoBufDataReader.IsClosed);
+            }
+
+            [TestMethod]
+            public void ShouldReturnFalseWhenNooMoreResults()
+            {
+                // Act
+                var result = protoBufDataReader.NextResult();
+
+                // Assert
+                Assert.IsFalse(result);
             }
         }
 
@@ -237,7 +261,7 @@ namespace ProtoBuf.Data.Light.Test
 
                     for (int i = 0; i < protoBufDataReader.FieldCount; i++)
                     {
-                        Assert.AreEqual(dataReaderMock.GetValue(i).ToString(), protoBufDataReader.GetValue(i).ToString());
+                        Assert.AreEqual(Convert.ToString(dataReaderMock.GetValue(i)), Convert.ToString(protoBufDataReader.GetValue(i)));
                     }
                 }
             }
@@ -309,6 +333,43 @@ namespace ProtoBuf.Data.Light.Test
 
                 // Assert
                 Assert.AreEqual(dataReaderMock.GetBoolean(0), protoBufDataReader.GetBoolean(0));
+            }
+        }
+
+        [TestClass]
+        public class TheIsDBNullMethod : ProtoBufDataReaderTests
+        {
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            {
+                // Arrange
+                protoBufDataReader.Close();
+
+                // Act
+                protoBufDataReader.IsDBNull(0);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenIndexIsOutOfRange()
+            {
+                // Act
+                protoBufDataReader.IsDBNull(protoBufDataReader.FieldCount);
+            }
+
+            [TestMethod]
+            public void ShouldReturnCorrespondingValue()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+
+                protoBufDataReader.Read();
+                dataReaderMock.Read();
+
+                // Assert
+                for (var i = 0; i < protoBufDataReader.FieldCount; i++)
+                {
+                    Assert.AreEqual(dataReaderMock.IsDBNull(i), protoBufDataReader.IsDBNull(i));
+                }
             }
         }
 
@@ -765,6 +826,65 @@ namespace ProtoBuf.Data.Light.Test
 
                 // Assert
                 Assert.AreEqual(dataReaderMock.GetString(13), protoBufDataReader.GetString(13));
+            }
+        }
+
+        [TestClass]
+        public class TheGetValuesMethod : ProtoBufDataReaderTests
+        {
+            [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+            public void ShouldThrowExceptionWhenValuesIsNull()
+            {
+                // Act
+                protoBufDataReader.GetValues(null);
+            }
+
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            {
+                // Arrange
+                protoBufDataReader.Close();
+
+                // Act
+                protoBufDataReader.GetString(13);
+            }
+
+            [TestMethod]
+            public void ShouldReturnCorrespondingValues()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+
+                dataReaderMock.Read();
+                protoBufDataReader.Read();
+
+                var valuesMock = new object[dataReaderMock.FieldCount];
+                var values = new object[protoBufDataReader.FieldCount];
+
+                dataReaderMock.GetValues(valuesMock);
+                protoBufDataReader.GetValues(values);
+
+                // Assert
+                Assert.AreEqual(string.Join("", valuesMock), string.Join("", values));
+            }
+
+            [TestMethod]
+            public void ShouldReturnCorrespondingValuesWithSmallerArray()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+
+                dataReaderMock.Read();
+                protoBufDataReader.Read();
+
+                var valuesMock = new object[1];
+                var values = new object[1];
+
+                dataReaderMock.GetValues(valuesMock);
+                protoBufDataReader.GetValues(values);
+
+                // Assert
+                Assert.AreEqual(string.Join("", valuesMock), string.Join("", values));
             }
         }
     }
