@@ -10,6 +10,9 @@ using System.Runtime.CompilerServices;
 
 namespace ProtoBuf.Data.Light
 {
+    /// <summary>
+    /// Provides a way of reading a forward-only stream of a serialized <see cref="IDataReader"/>.
+    /// </summary>
     public class ProtoBufDataReader : IDataReader
     {
         private readonly List<ProtoBufFieldInfo> fieldInfos = new List<ProtoBufFieldInfo>();
@@ -45,6 +48,9 @@ namespace ProtoBuf.Data.Light
             this.Dispose(false);
         }
 
+        /// <summary>
+        /// Closes the <see cref="ProotoBufDataReader"/> object.
+        /// </summary>
         public void Close()
         {
             this.stream.Close();
@@ -62,6 +68,12 @@ namespace ProtoBuf.Data.Light
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="DataTable"/> that describes the column metadata of the
+        /// <see cref="ProtoBufDataReader"/>.
+        /// </summary>
+        /// <returns>A <see cref="DataTable"/> that describes the column metadata.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
         public DataTable GetSchemaTable()
         {
             this.ThrowIfClosed();
@@ -74,8 +86,17 @@ namespace ProtoBuf.Data.Light
             return this.schemaTable;
         }
 
+        /// <summary>
+        /// Retrieves a Boolean value that indicates whether the specified <see cref="ProtoBufDataReader"/> 
+        /// instance has been closed.
+        /// </summary>
         public bool IsClosed { get; private set; }
 
+        /// <summary>
+        /// Advances the data reader to the next result.
+        /// </summary>
+        /// <returns>true if there are more result sets; otherwise false.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
         public bool NextResult()
         {
             this.ThrowIfClosed();
@@ -102,6 +123,11 @@ namespace ProtoBuf.Data.Light
             return true;
         }
 
+        /// <summary>
+        /// Advances the <see cref="ProtoBufDataReader"/> to the next record.
+        /// </summary>
+        /// <returns>true if there are more rows; otherwise false.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
         public bool Read()
         {
             this.ThrowIfClosed();
@@ -136,6 +162,10 @@ namespace ProtoBuf.Data.Light
             }
         }
 
+        /// <summary>
+        /// Releases all resources used by the current instance of the <see cref="ProtoBufDataReader"/>
+        /// class.
+        /// </summary>
         public void Dispose()
         {
             this.Dispose(true);
@@ -153,6 +183,14 @@ namespace ProtoBuf.Data.Light
             }
         }
 
+        /// <summary>
+        /// Gets the value of the specified column as a Boolean.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The value of the column.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public bool GetBoolean(int i)
         {
             this.ThrowIfClosed();
@@ -161,6 +199,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Bool;
         }
 
+        /// <summary>
+        /// Gets the value of the specified column as a byte.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The value of the column.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public byte GetByte(int i)
         {
             this.ThrowIfClosed();
@@ -169,6 +215,19 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Byte;
         }
 
+        /// <summary>
+        /// Reads a stream of bytes from the specified column offset into the buffer
+        /// an array starting at the given buffer offset.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <param name="fieldOffset">The index within the field from which to begin the read operation.</param>
+        /// <param name="buffer">The buffer into which to read the stream of bytes.</param>
+        /// <param name="bufferoffset">The index within the buffer where the write operation is to start.</param>
+        /// <param name="length">The maximum length to copy into the buffer.</param>
+        /// <returns>The actual number of bytes read.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
             this.ThrowIfClosed();
@@ -183,6 +242,14 @@ namespace ProtoBuf.Data.Light
             return length;
         }
 
+        /// <summary>
+        /// Gets the character value of the specified column.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The character value of the specified column.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public char GetChar(int i)
         {
             this.ThrowIfClosed();
@@ -191,6 +258,19 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Char;
         }
 
+        /// <summary>
+        /// Reads a stream of characters from the specified column offset into the buffer
+        /// as an array starting at the given buffer offset.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <param name="fieldOffset">The index within the field from which to begin the read operation.</param>
+        /// <param name="buffer">The buffer into which to read the stream of bytes.</param>
+        /// <param name="bufferoffset">The index within the buffer where the write operation is to start.</param>
+        /// <param name="length">The maximum length to copy into the buffer.</param>
+        /// <returns>The actual number of characters read.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public long GetChars(int i, long fieldOffset, char[] buffer, int bufferoffset, int length)
         {
             this.ThrowIfClosed();
@@ -213,6 +293,13 @@ namespace ProtoBuf.Data.Light
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Gets a string representing the data type of the specified column.
+        /// </summary>
+        /// <param name="i">The zero-based ordinal position of the column to find.</param>
+        /// <returns>The string representing the data type of the specified column.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         public string GetDataTypeName(int i)
         {
             this.ThrowIfClosed();
@@ -221,6 +308,14 @@ namespace ProtoBuf.Data.Light
             return this.fieldInfos[i].DataType.Name;
         }
 
+        /// <summary>
+        /// Gets the date and time data value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The date and time data value of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public DateTime GetDateTime(int i)
         {
             this.ThrowIfClosed();
@@ -229,6 +324,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].DateTime;
         }
 
+        /// <summary>
+        /// Gets the fixed-position numeric value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The fixed-position numeric value of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public decimal GetDecimal(int i)
         {
             this.ThrowIfClosed();
@@ -237,6 +340,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Decimal;
         }
 
+        /// <summary>
+        /// Gets the double-precision floating point number of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The double-precision floating point number of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public double GetDouble(int i)
         {
             this.ThrowIfClosed();
@@ -253,6 +364,14 @@ namespace ProtoBuf.Data.Light
             return this.fieldInfos[i].DataType;
         }
 
+        /// <summary>
+        /// Gets the single-precision floating point number of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The single-precision floating point number of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public float GetFloat(int i)
         {
             this.ThrowIfClosed();
@@ -261,6 +380,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Float;
         }
 
+        /// <summary>
+        /// Returns the GUID value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The GUID value of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public Guid GetGuid(int i)
         {
             this.ThrowIfClosed();
@@ -269,6 +396,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Guid;
         }
 
+        /// <summary>
+        /// Gets the 16-bit signed integer value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The 16-bit signed integer value of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public short GetInt16(int i)
         {
             this.ThrowIfClosed();
@@ -277,6 +412,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Short;
         }
 
+        /// <summary>
+        /// Gets the 32-bit signed integer value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The 32-bit signed integer value of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public int GetInt32(int i)
         {
             this.ThrowIfClosed();
@@ -285,6 +428,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Int;
         }
 
+        /// <summary>
+        /// Gets the 64-bit signed integer value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The 64-bit signed integer value of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public long GetInt64(int i)
         {
             this.ThrowIfClosed();
@@ -293,6 +444,13 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Long;
         }
 
+        /// <summary>
+        /// Gets the name of the specified column.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The name of the specified column.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         public string GetName(int i)
         {
             this.ThrowIfClosed();
@@ -328,6 +486,14 @@ namespace ProtoBuf.Data.Light
             return null;
         }
 
+        /// <summary>
+        /// Gets the string value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The string value of the specified field.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
+        /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public string GetString(int i)
         {
             this.ThrowIfClosed();
@@ -336,6 +502,13 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].String;
         }
 
+        /// <summary>
+        /// Return the value of the specified field.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The <see cref="Object"/> which will contain the field value upon return.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         public object GetValue(int i)
         {
             this.ThrowIfClosed();
@@ -344,6 +517,13 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Value;
         }
 
+        /// <summary>
+        /// Populates an array of objects with the column values of the current row.
+        /// </summary>
+        /// <param name="values">An array of <see cref="Object"/> into which to copy the attribute columns.</param>
+        /// <returns>The number of instances of <see cref="Object"/> in the array.</returns>
+        /// <exception cref="ArgumentNullException">values is null.</exception>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
         public int GetValues(object[] values)
         {
             Throw.IfNull(values, "values");
@@ -360,6 +540,13 @@ namespace ProtoBuf.Data.Light
             return valuesCount;
         }
 
+        /// <summary>
+        /// Return whether the specified field is set to null.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>true if the specified field is set to null; otherwise, false.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         public bool IsDBNull(int i)
         {
             this.ThrowIfClosed();
@@ -368,6 +555,14 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].IsNull;
         }
 
+        /// <summary>
+        /// Gets the value of the specified column in its native format given the column
+        /// name.
+        /// </summary>
+        /// <param name="name">The column name.</param>
+        /// <returns>The value of the specified column in its native format.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="IndexOutOfRangeException">No column with the specified name was found.</exception>
         public object this[string name]
         {
             get
@@ -376,6 +571,14 @@ namespace ProtoBuf.Data.Light
             }
         }
 
+        /// <summary>
+        /// Gets the value of the specified column in its native format given the column
+        /// ordinal.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The value of the specified column in its native format.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         public object this[int i]
         {
             get
