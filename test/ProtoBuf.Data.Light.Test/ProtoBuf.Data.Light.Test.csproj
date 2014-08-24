@@ -63,6 +63,7 @@
     <Compile Include="Benchmark.cs" />
     <Compile Include="DataReaderMock.cs" />
     <Compile Include="DataSerializerTests.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtoBufDataReaderTests.cs" />
   </ItemGroup>
