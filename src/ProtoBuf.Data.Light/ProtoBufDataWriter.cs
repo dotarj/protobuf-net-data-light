@@ -40,11 +40,14 @@ namespace ProtoBuf.Data.Light
 
             for (var i = 0; i < dataReader.FieldCount; i++)
             {
+                var dataType = dataReader.GetFieldType(i);
+
                 fieldInfos.Add(new ProtoBufFieldInfo
                 {
                     Name = dataReader.GetName(i),
                     Ordinal = i,
-                    DataType = dataReader.GetFieldType(i)
+                    DataType = dataType,
+                    ProtoBufDataType = TypeHelper.GetProtoBufDataType(dataType)
                 });
             }
 
@@ -62,7 +65,7 @@ namespace ProtoBuf.Data.Light
                 ProtoWriter.WriteFieldHeader(1, WireType.String, writer);
                 ProtoWriter.WriteString(fieldInfo.Name, writer);
                 ProtoWriter.WriteFieldHeader(2, WireType.Variant, writer);
-                ProtoWriter.WriteInt32((int)TypeHelper.GetProtoBufDataType(fieldInfo.DataType), writer);
+                ProtoWriter.WriteInt32((int)fieldInfo.ProtoBufDataType, writer);
 
                 ProtoWriter.EndSubItem(fieldInfoToken, writer);
             }
@@ -93,9 +96,7 @@ namespace ProtoBuf.Data.Light
 
                     if (!isDBNull)
                     {
-                        var protoBufDataType = TypeHelper.GetProtoBufDataType(fieldInfo.DataType);
-
-                        switch (protoBufDataType)
+                        switch (fieldInfo.ProtoBufDataType)
                         {
                             case ProtoBufDataType.Bool:
                                 ProtoWriter.WriteFieldHeader(2, WireType.Variant, writer);

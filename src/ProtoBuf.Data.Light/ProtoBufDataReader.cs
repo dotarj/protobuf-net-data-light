@@ -676,11 +676,15 @@ namespace ProtoBuf.Data.Light
         {
             var fieldInfoToken = ProtoReader.StartSubItem(this.protoReader);
 
+            var name = this.ReadName();
+            var protoBufDataType = this.ReadDataType();
+
             var fieldInfo = new ProtoBufFieldInfo
             {
-                Name = this.ReadName(),
+                Name = name,
                 Ordinal = ordinal,
-                DataType = TypeHelper.GetType(this.ReadDataType())
+                DataType = TypeHelper.GetType(protoBufDataType),
+                ProtoBufDataType = protoBufDataType
             };
 
             this.fieldInfos.Add(fieldInfo);
@@ -775,9 +779,8 @@ namespace ProtoBuf.Data.Light
         private void ReadFieldValue(int i)
         {
             var field = this.protoReader.ReadFieldHeader();
-            var protoBufDataType = TypeHelper.GetProtoBufDataType(this.fieldInfos[i].DataType);
 
-            switch (protoBufDataType)
+            switch (this.fieldInfos[i].ProtoBufDataType)
             {
                 case ProtoBufDataType.Bool:
                     this.buffers[i].Bool = this.protoReader.ReadBoolean();
