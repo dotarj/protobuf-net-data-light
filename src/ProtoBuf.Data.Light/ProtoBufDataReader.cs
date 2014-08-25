@@ -285,12 +285,9 @@ namespace ProtoBuf.Data.Light
             return length;
         }
 
-        public IDataReader GetData(int i)
+        IDataReader IDataRecord.GetData(int i)
         {
-            this.ThrowIfClosed();
-            this.ThrowIfIndexOutOfRange(i);
-
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
