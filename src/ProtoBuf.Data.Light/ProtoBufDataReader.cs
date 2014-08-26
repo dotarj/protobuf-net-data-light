@@ -746,8 +746,6 @@ namespace ProtoBuf.Data.Light
             }
 
             var rowToken = ProtoReader.StartSubItem(this.protoReader);
-
-            this.protoReader.ReadFieldHeader();
             
             this.ReadFieldValues();
 
@@ -756,8 +754,6 @@ namespace ProtoBuf.Data.Light
 
         private void ReadFieldValues()
         {
-            var fieldValuesToken = ProtoReader.StartSubItem(this.protoReader);
-
             int fieldIndex;
 
             while ((fieldIndex = this.protoReader.ReadFieldHeader()) != 0)
@@ -826,8 +822,6 @@ namespace ProtoBuf.Data.Light
                         break;
                 }
             }
-
-            ProtoReader.EndSubItem(fieldValuesToken, this.protoReader);
 
             this.protoReader.ReadFieldHeader();
         }

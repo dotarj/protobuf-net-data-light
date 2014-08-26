@@ -81,10 +81,6 @@ namespace ProtoBuf.Data.Light
 
                 var rowToken = ProtoWriter.StartSubItem(rowIndex, writer);
 
-                ProtoWriter.WriteFieldHeader(5, WireType.StartGroup, writer);
-
-                var fieldValuesToken = ProtoWriter.StartSubItem(5, writer);
-
                 for (var i = 0; i < columns.Count; i++)
                 {
                     var fieldIndex = i + 1;
@@ -157,8 +153,6 @@ namespace ProtoBuf.Data.Light
                         }
                     }
                 }
-
-                ProtoWriter.EndSubItem(fieldValuesToken, writer);
 
                 ProtoWriter.EndSubItem(rowToken, writer);
 
