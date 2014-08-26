@@ -16,9 +16,12 @@ namespace ProtoBuf.Data.Light
 
             using (var protoWriter = new ProtoWriter(stream, null, null))
             {
+                ProtoWriter.WriteFieldHeader(1, WireType.Variant, protoWriter);
+                ProtoWriter.WriteInt32(reader.RecordsAffected, protoWriter);
+
                 do
                 {
-                    ProtoWriter.WriteFieldHeader(1, WireType.StartGroup, protoWriter);
+                    ProtoWriter.WriteFieldHeader(2, WireType.StartGroup, protoWriter);
 
                     var resultToken = ProtoWriter.StartSubItem(resultIndex, protoWriter);
                     var columns = GetColumns(reader);
@@ -58,7 +61,7 @@ namespace ProtoBuf.Data.Light
         {
             foreach (var column in columns)
             {
-                ProtoWriter.WriteFieldHeader(2, WireType.StartGroup, writer);
+                ProtoWriter.WriteFieldHeader(3, WireType.StartGroup, writer);
 
                 var columnToken = ProtoWriter.StartSubItem(column, writer);
 
@@ -77,7 +80,7 @@ namespace ProtoBuf.Data.Light
 
             while (reader.Read())
             {
-                ProtoWriter.WriteFieldHeader(3, WireType.StartGroup, writer);
+                ProtoWriter.WriteFieldHeader(4, WireType.StartGroup, writer);
 
                 var rowToken = ProtoWriter.StartSubItem(rowIndex, writer);
 

@@ -175,7 +175,7 @@ namespace ProtoBuf.Data.Light.Test
 
         public int RecordsAffected
         {
-            get { throw new NotImplementedException(); }
+            get { return 1; }
         }
 
         public void Dispose()

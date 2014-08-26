@@ -887,5 +887,29 @@ namespace ProtoBuf.Data.Light.Test
                 Assert.AreEqual(string.Join("", valuesMock), string.Join("", values));
             }
         }
+
+        [TestClass]
+        public class TheRecordsAffectedProperty : ProtoBufDataReaderTests
+        {
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenDataReaderIsClosed()
+            {
+                // Arrange
+                protoBufDataReader.Close();
+
+                // Act
+                var recordsAffected = protoBufDataReader.RecordsAffected;
+            }
+
+            [TestMethod]
+            public void ShouldReturnCorrespondingValues()
+            {
+                // Arrange
+                var dataReaderMock = new DataReaderMock(false);
+
+                // Assert
+                Assert.AreEqual(dataReaderMock.RecordsAffected, protoBufDataReader.RecordsAffected);
+            }
+        }
     }
 }

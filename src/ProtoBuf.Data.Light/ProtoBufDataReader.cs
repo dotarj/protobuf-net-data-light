@@ -18,6 +18,7 @@ namespace ProtoBuf.Data.Light
         private readonly List<ProtoBufDataColumn> columns = new List<ProtoBufDataColumn>();
         private readonly ProtoReader protoReader;
         private readonly Stream stream;
+        private readonly int recordsAffected;
 
         private ProtoBufDataBuffer[] buffers;
         private int currentFieldHeader;
@@ -34,6 +35,15 @@ namespace ProtoBuf.Data.Light
             this.ReadNextFieldHeader();
 
             if (this.currentFieldHeader != 1)
+            {
+                throw new InvalidDataException(string.Format("Field header 1 expected, actual '{0}'.", this.currentFieldHeader));
+            }
+
+            recordsAffected = this.protoReader.ReadInt32();
+
+            this.ReadNextFieldHeader();
+
+            if (this.currentFieldHeader != 2)
             {
                 throw new InvalidDataException(string.Format("Field header 2 expected, actual '{0}'.", this.currentFieldHeader));
             }
@@ -156,7 +166,7 @@ namespace ProtoBuf.Data.Light
             {
                 this.ThrowIfClosed();
 
-                return 0;
+                return this.recordsAffected;
             }
         }
 
@@ -645,9 +655,9 @@ namespace ProtoBuf.Data.Light
 
                 ProtoReader.EndSubItem(this.currentResultToken, this.protoReader);
             }
-            else if (this.currentFieldHeader != 2)
+            else if (this.currentFieldHeader != 3)
             {
-                throw new InvalidDataException(string.Format("Field header 2 expected, actual '{0}'.", this.currentFieldHeader));
+                throw new InvalidDataException(string.Format("Field header 3 expected, actual '{0}'.", this.currentFieldHeader));
             }
             else
             {
@@ -665,7 +675,7 @@ namespace ProtoBuf.Data.Light
 
                 ordinal++;
             }
-            while (this.currentFieldHeader == 2);
+            while (this.currentFieldHeader == 3);
         }
 
         private void ReadColumn(int ordinal)
