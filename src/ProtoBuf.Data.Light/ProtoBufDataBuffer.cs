@@ -61,6 +61,11 @@ namespace ProtoBuf.Data.Light
         private BufferType bufferType;
         private object referenceTypeBuffer;
 
+        internal ProtoBufDataBuffer()
+        {
+            this.IsNull = true;
+        }
+
         internal bool IsNull { get; set; }
 
         internal bool Bool
@@ -400,7 +405,7 @@ namespace ProtoBuf.Data.Light
         private void Clear()
         {
             this.referenceTypeBuffer = null;
-            this.IsNull = false;
+            this.IsNull = true;
             this.bufferType = BufferType.Empty;
         }
     }

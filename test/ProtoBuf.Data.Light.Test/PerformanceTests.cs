@@ -3,6 +3,8 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace ProtoBuf.Data.Light.Test
 {
@@ -12,20 +14,25 @@ namespace ProtoBuf.Data.Light.Test
         [TestMethod]
         public void Compare()
         {
-            var iterations = 100000;
+            var iterations = 100;
             var sqlDataReader = GetData("select top 100 * from Person.Person;");
             var dataTable = new DataTable();
 
             dataTable.Load(sqlDataReader);
 
-            var originalDataReader = dataTable.CreateDataReader();
+            var sourceDataReaders = new List<IDataReader>();
+            
+            for(int i = 0; i < iterations; i++)
+            {
+                sourceDataReaders.Add(dataTable.CreateDataReader());
+            }
 
             // Act
-            var protoBufDataLight = Benchmark.RunParallel(() =>
+            var protoBufDataLight = Benchmark.RunParallel(i =>
             {
                 using (var memoryStream = new MemoryStream())
                 {
-                    DataSerializer.Serialize(memoryStream, originalDataReader);
+                    DataSerializer.Serialize(memoryStream, sourceDataReaders[i]);
 
                     memoryStream.Position = 0;
 
@@ -39,11 +46,18 @@ namespace ProtoBuf.Data.Light.Test
 
             Console.WriteLine(string.Format("ProtoBuf.Data.Light: {0} ms", protoBufDataLight));
 
-            var protoBufData = Benchmark.RunParallel(() =>
+            sourceDataReaders.Clear();
+
+            for (int i = 0; i < iterations; i++)
+            {
+                sourceDataReaders.Add(dataTable.CreateDataReader());
+            }
+
+            var protoBufData = Benchmark.RunParallel(i =>
             {
                 using (var memoryStream = new MemoryStream())
                 {
-                    ProtoBuf.Data.DataSerializer.Serialize(memoryStream, originalDataReader);
+                    ProtoBuf.Data.DataSerializer.Serialize(memoryStream, sourceDataReaders[i]);
 
                     memoryStream.Position = 0;
 

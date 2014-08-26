@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 public static class Benchmark
 {
-    public static TimeSpan Run(Action action, int iterations, bool shouldWarmup = true)
+    public static TimeSpan Run(Action<int> action, int iterations, bool shouldWarmup = true)
     {
         if (action == null)
         {
@@ -16,7 +16,7 @@ public static class Benchmark
 
         if (shouldWarmup)
         {
-            action();
+            action(0);
         }
 
         GC.Collect();
@@ -27,9 +27,9 @@ public static class Benchmark
 
         var stopwatch = Stopwatch.StartNew();
 
-        for (var i = 0; i < iterations; i++)
+        for (var i = shouldWarmup ? 1 : 0; i < iterations; i++)
         {
-            action();
+            action(i);
         }
 
         stopwatch.Stop();
@@ -37,7 +37,7 @@ public static class Benchmark
         return stopwatch.Elapsed;
     }
 
-    public static TimeSpan RunParallel(Action action, int iterations, bool shouldWarmup = true)
+    public static TimeSpan RunParallel(Action<int> action, int iterations, bool shouldWarmup = true)
     {
         if (action == null)
         {
@@ -46,7 +46,7 @@ public static class Benchmark
 
         if (shouldWarmup)
         {
-            action();
+            action(0);
         }
 
         GC.Collect();
@@ -57,7 +57,7 @@ public static class Benchmark
 
         var stopwatch = Stopwatch.StartNew();
 
-        Parallel.For(0, iterations, i => action());
+        Parallel.For(shouldWarmup ? 1 : 0, iterations, i => action(i));
 
         stopwatch.Stop();
 
