@@ -15,7 +15,7 @@ namespace ProtoBuf.Data.Light
     /// </summary>
     public class ProtoBufDataReader : IDataReader
     {
-        private readonly List<ProtoBufFieldInfo> fieldInfos = new List<ProtoBufFieldInfo>();
+        private readonly List<ProtoBufDataColumn> columns = new List<ProtoBufDataColumn>();
         private readonly ProtoReader protoReader;
         private readonly Stream stream;
 
@@ -28,8 +28,6 @@ namespace ProtoBuf.Data.Light
 
         internal ProtoBufDataReader(Stream stream)
         {
-            Throw.IfNull(stream, "stream");
-
             this.stream = stream;
             this.protoReader = new ProtoReader(this.stream, null, null);
 
@@ -105,7 +103,7 @@ namespace ProtoBuf.Data.Light
 
             this.buffers = null;
             this.schemaTable = null;
-            this.fieldInfos.Clear();
+            this.columns.Clear();
 
             this.ReadNextFieldHeader();
 
@@ -179,7 +177,7 @@ namespace ProtoBuf.Data.Light
             {
                 this.ThrowIfClosed();
 
-                return this.fieldInfos.Count;
+                return this.columns.Count;
             }
         }
 
@@ -302,7 +300,7 @@ namespace ProtoBuf.Data.Light
             this.ThrowIfClosed();
             this.ThrowIfIndexOutOfRange(i);
 
-            return this.fieldInfos[i].DataType.Name;
+            return this.columns[i].DataType.Name;
         }
 
         /// <summary>
@@ -358,7 +356,7 @@ namespace ProtoBuf.Data.Light
             this.ThrowIfClosed();
             this.ThrowIfIndexOutOfRange(i);
 
-            return this.fieldInfos[i].DataType;
+            return this.columns[i].DataType;
         }
 
         /// <summary>
@@ -453,30 +451,30 @@ namespace ProtoBuf.Data.Light
             this.ThrowIfClosed();
             this.ThrowIfIndexOutOfRange(i);
 
-            return this.fieldInfos[i].Name;
+            return this.columns[i].Name;
         }
 
         public int GetOrdinal(string name)
         {
             this.ThrowIfClosed();
 
-            var fieldInfo = this.GetFieldInfoByName(name);
+            var column = this.GetColumnByName(name);
 
-            if (fieldInfo == null)
+            if (column == null)
             {
                 throw new IndexOutOfRangeException(name);
             }
 
-            return fieldInfo.Ordinal;
+            return column.Ordinal;
         }
 
-        private ProtoBufFieldInfo GetFieldInfoByName(string name)
+        private ProtoBufDataColumn GetColumnByName(string name)
         {
-            foreach (var fieldInfo in fieldInfos)
+            foreach (var column in columns)
             {
-                if (name == fieldInfo.Name)
+                if (name == column.Name)
                 {
-                    return fieldInfo;
+                    return column;
                 }
             }
 
@@ -527,7 +525,7 @@ namespace ProtoBuf.Data.Light
 
             this.ThrowIfClosed();
 
-            var valuesCount = values.Length < this.fieldInfos.Count ? values.Length : this.fieldInfos.Count;
+            var valuesCount = values.Length < this.columns.Count ? values.Length : this.columns.Count;
 
             for (int i = 0; i < valuesCount; i++)
             {
@@ -594,7 +592,7 @@ namespace ProtoBuf.Data.Light
 
         private void ThrowIfIndexOutOfRange(int i)
         {
-            if (i < 0 || i >= this.fieldInfos.Count)
+            if (i < 0 || i >= this.columns.Count)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -605,7 +603,7 @@ namespace ProtoBuf.Data.Light
             var schemaTable = new DataTable("SchemaTable")
             {
                 Locale = CultureInfo.InvariantCulture,
-                MinimumCapacity = this.fieldInfos.Count
+                MinimumCapacity = this.columns.Count
             };
 
             var columnName = new DataColumn("ColumnName", typeof(string));
@@ -616,13 +614,13 @@ namespace ProtoBuf.Data.Light
             schemaTable.Columns.Add(columnOrdinal);
             schemaTable.Columns.Add(dataTypeName);
 
-            for (int i = 0; i < this.fieldInfos.Count; i++)
+            for (int i = 0; i < this.columns.Count; i++)
             {
                 var schemaRow = schemaTable.NewRow();
 
-                schemaRow[columnName] = this.fieldInfos[i].Name;
-                schemaRow[columnOrdinal] = this.fieldInfos[i].Ordinal;
-                schemaRow[dataTypeName] = this.fieldInfos[i].DataType.Name;
+                schemaRow[columnName] = this.columns[i].Name;
+                schemaRow[columnOrdinal] = this.columns[i].Ordinal;
+                schemaRow[dataTypeName] = this.columns[i].DataType.Name;
 
                 schemaTable.Rows.Add(schemaRow);
             }
@@ -653,33 +651,31 @@ namespace ProtoBuf.Data.Light
             }
             else
             {
-                this.ReadFieldInfos();
+                this.ReadColumns();
             }
         }
 
-        private void ReadFieldInfos()
+        private void ReadColumns()
         {
             var ordinal = 0;
 
             do
             {
-                this.ReadFieldInfo(ordinal);
-
-                this.ReadNextFieldHeader();
+                this.ReadColumn(ordinal);
 
                 ordinal++;
             }
             while (this.currentFieldHeader == 2);
         }
 
-        private void ReadFieldInfo(int ordinal)
+        private void ReadColumn(int ordinal)
         {
-            var fieldInfoToken = ProtoReader.StartSubItem(this.protoReader);
+            var columnToken = ProtoReader.StartSubItem(this.protoReader);
 
             var name = this.ReadName();
             var protoBufDataType = this.ReadDataType();
 
-            var fieldInfo = new ProtoBufFieldInfo
+            var column = new ProtoBufDataColumn
             {
                 Name = name,
                 Ordinal = ordinal,
@@ -687,11 +683,13 @@ namespace ProtoBuf.Data.Light
                 ProtoBufDataType = protoBufDataType
             };
 
-            this.fieldInfos.Add(fieldInfo);
+            this.columns.Add(column);
 
             this.protoReader.ReadFieldHeader();
 
-            ProtoReader.EndSubItem(fieldInfoToken, this.protoReader);
+            ProtoReader.EndSubItem(columnToken, this.protoReader);
+
+            this.ReadNextFieldHeader();
         }
 
         private string ReadName()
@@ -738,7 +736,7 @@ namespace ProtoBuf.Data.Light
         {
             if (this.buffers == null)
             {
-                this.buffers = new ProtoBufDataBuffer[this.fieldInfos.Count];
+                this.buffers = new ProtoBufDataBuffer[this.columns.Count];
 
                 ProtoBufDataBuffer.Initialize(this.buffers);
             }
@@ -756,24 +754,6 @@ namespace ProtoBuf.Data.Light
             ProtoReader.EndSubItem(rowToken, this.protoReader);
         }
 
-        private void ReadFieldIsNull()
-        {
-            var fieldNullToken = ProtoReader.StartSubItem(this.protoReader);
-
-            int fieldIndex;
-
-            while ((fieldIndex = this.protoReader.ReadFieldHeader()) != 0)
-            {
-                this.protoReader.ReadBoolean();
-
-                this.buffers[fieldIndex - 1].IsNull = true;
-            }
-
-            ProtoReader.EndSubItem(fieldNullToken, this.protoReader);
-
-            this.protoReader.ReadFieldHeader();
-        }
-
         private void ReadFieldValues()
         {
             var fieldValuesToken = ProtoReader.StartSubItem(this.protoReader);
@@ -782,7 +762,7 @@ namespace ProtoBuf.Data.Light
 
             while ((fieldIndex = this.protoReader.ReadFieldHeader()) != 0)
             {
-                switch (this.fieldInfos[fieldIndex - 1].ProtoBufDataType)
+                switch (this.columns[fieldIndex - 1].ProtoBufDataType)
                 {
                     case ProtoBufDataType.Bool:
                         this.buffers[fieldIndex - 1].Bool = this.protoReader.ReadBoolean();

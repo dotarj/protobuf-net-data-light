@@ -5,7 +5,7 @@ using System;
 
 namespace ProtoBuf.Data.Light
 {
-    internal sealed class ProtoBufFieldInfo
+    internal sealed class ProtoBufDataColumn
     {
         internal string Name;
 

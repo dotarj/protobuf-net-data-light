@@ -14,7 +14,7 @@ namespace ProtoBuf.Data.Light.Test
         [TestMethod]
         public void Compare()
         {
-            var iterations = 100;
+            var iterations = 1000;
             var sqlDataReader = GetData("select top 100 * from Person.Person;");
             var dataTable = new DataTable();
 
