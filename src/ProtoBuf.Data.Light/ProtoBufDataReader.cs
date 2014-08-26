@@ -748,32 +748,99 @@ namespace ProtoBuf.Data.Light
             }
 
             var rowToken = ProtoReader.StartSubItem(this.protoReader);
-            var i = 0;
 
-            while (this.protoReader.ReadFieldHeader() != 0)
-            {
-                this.ReadField(i);
+            this.protoReader.ReadFieldHeader();
 
-                i++;
-            }
+            this.ReadFieldIsNull();
+            
+            this.ReadFieldValues();
 
             ProtoReader.EndSubItem(rowToken, this.protoReader);
         }
 
-        private void ReadField(int i)
+        private void ReadFieldIsNull()
         {
-            var fieldToken = ProtoReader.StartSubItem(this.protoReader);
+            var fieldNullToken = ProtoReader.StartSubItem(this.protoReader);
 
-            this.buffers[i].IsNull = this.ReadFieldIsNull();
+            int fieldHeader;
 
-            if (!this.buffers[i].IsNull)
+            while ((fieldHeader = this.protoReader.ReadFieldHeader()) != 0)
             {
-                this.ReadFieldValue(i);
+                var fieldIndex = fieldHeader - 1;
+
+                this.protoReader.ReadBoolean();
+
+                this.buffers[fieldIndex].IsNull = true;
             }
 
-            this.protoReader.ReadFieldHeader();
+            ProtoReader.EndSubItem(fieldNullToken, this.protoReader);
 
-            ProtoReader.EndSubItem(fieldToken, this.protoReader);
+            this.protoReader.ReadFieldHeader();
+        }
+
+        private void ReadFieldValues()
+        {
+            var fieldValuesToken = ProtoReader.StartSubItem(this.protoReader);
+
+            int fieldHeader;
+
+            while ((fieldHeader = this.protoReader.ReadFieldHeader()) != 0)
+            {
+                var fieldIndex = fieldHeader - 1;
+
+                switch (this.fieldInfos[fieldIndex].ProtoBufDataType)
+                {
+                    case ProtoBufDataType.Bool:
+                        this.buffers[fieldIndex].Bool = this.protoReader.ReadBoolean();
+                        break;
+                    case ProtoBufDataType.Byte:
+                        this.buffers[fieldIndex].Byte = this.protoReader.ReadByte();
+                        break;
+                    case ProtoBufDataType.ByteArray:
+                        this.buffers[fieldIndex].ByteArray = ProtoReader.AppendBytes(null, this.protoReader);
+                        break;
+                    case ProtoBufDataType.Char:
+                        this.buffers[fieldIndex].Char = (char)this.protoReader.ReadInt16();
+                        break;
+                    case ProtoBufDataType.CharArray:
+                        this.buffers[fieldIndex].CharArray = this.protoReader.ReadString().ToCharArray();
+                        break;
+                    case ProtoBufDataType.DateTime:
+                        this.buffers[fieldIndex].DateTime = BclHelpers.ReadDateTime(this.protoReader);
+                        break;
+                    case ProtoBufDataType.Decimal:
+                        this.buffers[fieldIndex].Decimal = BclHelpers.ReadDecimal(this.protoReader);
+                        break;
+                    case ProtoBufDataType.Double:
+                        this.buffers[fieldIndex].Double = this.protoReader.ReadDouble();
+                        break;
+                    case ProtoBufDataType.Float:
+                        this.buffers[fieldIndex].Float = this.protoReader.ReadSingle();
+                        break;
+                    case ProtoBufDataType.Guid:
+                        this.buffers[fieldIndex].Guid = BclHelpers.ReadGuid(this.protoReader);
+                        break;
+                    case ProtoBufDataType.Int:
+                        this.buffers[fieldIndex].Int = this.protoReader.ReadInt32();
+                        break;
+                    case ProtoBufDataType.Long:
+                        this.buffers[fieldIndex].Long = this.protoReader.ReadInt64();
+                        break;
+                    case ProtoBufDataType.Short:
+                        this.buffers[fieldIndex].Short = this.protoReader.ReadInt16();
+                        break;
+                    case ProtoBufDataType.String:
+                        this.buffers[fieldIndex].String = this.protoReader.ReadString();
+                        break;
+                    case ProtoBufDataType.TimeSpan:
+                        this.buffers[fieldIndex].TimeSpan = BclHelpers.ReadTimeSpan(this.protoReader);
+                        break;
+                }
+            }
+
+            ProtoReader.EndSubItem(fieldValuesToken, this.protoReader);
+
+            this.protoReader.ReadFieldHeader();
         }
 
         private void ReadFieldValue(int i)
@@ -828,13 +895,6 @@ namespace ProtoBuf.Data.Light
                     this.buffers[i].TimeSpan = BclHelpers.ReadTimeSpan(this.protoReader);
                     break;
             }
-        }
-
-        private bool ReadFieldIsNull()
-        {
-            var field = this.protoReader.ReadFieldHeader();
-
-            return this.protoReader.ReadBoolean();
         }
 
         private void ReadRemainingRows()
