@@ -527,7 +527,7 @@ namespace ProtoBuf.Data.Light
 
             var valuesCount = values.Length < this.columns.Count ? values.Length : this.columns.Count;
 
-            for (int i = 0; i < valuesCount; i++)
+            for (var i = 0; i < valuesCount; i++)
             {
                 values[i] = this.buffers[i].Value;
             }
@@ -614,7 +614,7 @@ namespace ProtoBuf.Data.Light
             schemaTable.Columns.Add(columnOrdinal);
             schemaTable.Columns.Add(dataTypeName);
 
-            for (int i = 0; i < this.columns.Count; i++)
+            for (var i = 0; i < this.columns.Count; i++)
             {
                 var schemaRow = schemaTable.NewRow();
 
@@ -754,71 +754,73 @@ namespace ProtoBuf.Data.Light
 
         private void ReadFieldValues()
         {
-            int fieldIndex;
+            int fieldHeader;
 
-            while ((fieldIndex = this.protoReader.ReadFieldHeader()) != 0)
+            while ((fieldHeader = this.protoReader.ReadFieldHeader()) != 0)
             {
-                switch (this.columns[fieldIndex - 1].ProtoBufDataType)
+                var columnIndex = fieldHeader - 1;
+
+                switch (this.columns[columnIndex].ProtoBufDataType)
                 {
                     case ProtoBufDataType.Bool:
-                        this.buffers[fieldIndex - 1].Bool = this.protoReader.ReadBoolean();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Bool = this.protoReader.ReadBoolean();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Byte:
-                        this.buffers[fieldIndex - 1].Byte = this.protoReader.ReadByte();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Byte = this.protoReader.ReadByte();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.ByteArray:
-                        this.buffers[fieldIndex - 1].ByteArray = ProtoReader.AppendBytes(null, this.protoReader);
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].ByteArray = ProtoReader.AppendBytes(null, this.protoReader);
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Char:
-                        this.buffers[fieldIndex - 1].Char = (char)this.protoReader.ReadInt16();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Char = (char)this.protoReader.ReadInt16();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.CharArray:
-                        this.buffers[fieldIndex - 1].CharArray = this.protoReader.ReadString().ToCharArray();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].CharArray = this.protoReader.ReadString().ToCharArray();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.DateTime:
-                        this.buffers[fieldIndex - 1].DateTime = BclHelpers.ReadDateTime(this.protoReader);
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].DateTime = BclHelpers.ReadDateTime(this.protoReader);
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Decimal:
-                        this.buffers[fieldIndex - 1].Decimal = BclHelpers.ReadDecimal(this.protoReader);
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Decimal = BclHelpers.ReadDecimal(this.protoReader);
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Double:
-                        this.buffers[fieldIndex - 1].Double = this.protoReader.ReadDouble();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Double = this.protoReader.ReadDouble();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Float:
-                        this.buffers[fieldIndex - 1].Float = this.protoReader.ReadSingle();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Float = this.protoReader.ReadSingle();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Guid:
-                        this.buffers[fieldIndex - 1].Guid = BclHelpers.ReadGuid(this.protoReader);
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Guid = BclHelpers.ReadGuid(this.protoReader);
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Int:
-                        this.buffers[fieldIndex - 1].Int = this.protoReader.ReadInt32();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Int = this.protoReader.ReadInt32();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Long:
-                        this.buffers[fieldIndex - 1].Long = this.protoReader.ReadInt64();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Long = this.protoReader.ReadInt64();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.Short:
-                        this.buffers[fieldIndex - 1].Short = this.protoReader.ReadInt16();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].Short = this.protoReader.ReadInt16();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.String:
-                        this.buffers[fieldIndex - 1].String = this.protoReader.ReadString();
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].String = this.protoReader.ReadString();
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                     case ProtoBufDataType.TimeSpan:
-                        this.buffers[fieldIndex - 1].TimeSpan = BclHelpers.ReadTimeSpan(this.protoReader);
-                        this.buffers[fieldIndex - 1].IsNull = false;
+                        this.buffers[columnIndex].TimeSpan = BclHelpers.ReadTimeSpan(this.protoReader);
+                        this.buffers[columnIndex].IsNull = false;
                         break;
                 }
             }
