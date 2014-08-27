@@ -32,21 +32,11 @@ namespace ProtoBuf.Data.Light
             this.stream = stream;
             this.protoReader = new ProtoReader(this.stream, null, null);
 
-            this.ReadNextFieldHeader();
-
-            if (this.currentFieldHeader != 1)
-            {
-                throw new InvalidDataException(string.Format("Field header 1 expected, actual '{0}'.", this.currentFieldHeader));
-            }
+            this.currentFieldHeader = this.ReadNextFieldHeader(1);
 
             recordsAffected = this.protoReader.ReadInt32();
 
-            this.ReadNextFieldHeader();
-
-            if (this.currentFieldHeader != 2)
-            {
-                throw new InvalidDataException(string.Format("Field header 2 expected, actual '{0}'.", this.currentFieldHeader));
-            }
+            this.currentFieldHeader = this.ReadNextFieldHeader(2);
 
             this.ReadNextResult();
         }
@@ -115,7 +105,7 @@ namespace ProtoBuf.Data.Light
             this.schemaTable = null;
             this.columns.Clear();
 
-            this.ReadNextFieldHeader();
+            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
 
             if (this.currentFieldHeader == 0)
             {
@@ -155,7 +145,7 @@ namespace ProtoBuf.Data.Light
             }
 
             this.ReadRow();
-            this.ReadNextFieldHeader();
+            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
 
             return true;
         }
@@ -647,7 +637,7 @@ namespace ProtoBuf.Data.Light
         {
             this.currentResultToken = ProtoReader.StartSubItem(this.protoReader);
 
-            this.ReadNextFieldHeader();
+            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
 
             if (this.currentFieldHeader == 0)
             {
@@ -699,26 +689,33 @@ namespace ProtoBuf.Data.Light
 
             ProtoReader.EndSubItem(columnToken, this.protoReader);
 
-            this.ReadNextFieldHeader();
+            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
         }
 
         private string ReadName()
         {
-            var field = this.protoReader.ReadFieldHeader();
+            this.protoReader.ReadFieldHeader();
 
             return this.protoReader.ReadString();
         }
 
         private ProtoBufDataType ReadDataType()
         {
-            var field = this.protoReader.ReadFieldHeader();
+            this.protoReader.ReadFieldHeader();
 
             return (ProtoBufDataType)this.protoReader.ReadInt32();
         }
 
-        private void ReadNextFieldHeader()
+        private int ReadNextFieldHeader(int expectedFieldHeader)
         {
-            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
+            var fieldHeader = this.protoReader.ReadFieldHeader();
+
+            if (fieldHeader != expectedFieldHeader)
+            {
+                throw new InvalidDataException(string.Format("Field header {0} expected, actual '{0}'.", expectedFieldHeader, fieldHeader));
+            }
+
+            return fieldHeader;
         }
 
         private void Dispose(bool disposing)
