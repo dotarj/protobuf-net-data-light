@@ -7,6 +7,8 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Security;
+using System.Threading;
 
 namespace ProtoBuf.Data.Light
 {
@@ -220,24 +222,64 @@ namespace ProtoBuf.Data.Light
         /// <param name="i">The zero-based column ordinal.</param>
         /// <param name="fieldOffset">The index within the field from which to begin the read operation.</param>
         /// <param name="buffer">The buffer into which to read the stream of bytes.</param>
-        /// <param name="bufferoffset">The index within the buffer where the write operation is to start.</param>
+        /// <param name="bufferOffset">The index within the buffer where the write operation is to start.</param>
         /// <param name="length">The maximum length to copy into the buffer.</param>
         /// <returns>The actual number of bytes read.</returns>
         /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
         /// <exception cref="OutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
         {
+            // Partial implementation of SqlDataReader.GetBytes.
+
             this.ThrowIfClosed();
             this.ThrowIfIndexOutOfRange(i);
 
-            var bytes = this.buffers[i].ByteArray;
+            if (fieldOffset < 0)
+            {
+                throw new InvalidOperationException("Invalid value for argument 'fieldOffset'. The value must be greater than or equal to 0.");
+            }
 
-            length = Math.Min(length, bytes.Length - (int)fieldOffset);
+            if (length < 0)
+            {
+                throw new IndexOutOfRangeException(string.Format("Data length '{0}' is less than 0.", length));
+            }
 
-            Array.Copy(bytes, fieldOffset, buffer, bufferoffset, length);
+            var byteArray = this.buffers[i].ByteArray;
+            var copyLength = byteArray.LongLength;
 
-            return length;
+            if (buffer == null)
+            {
+                return copyLength;
+            }
+
+            if (bufferOffset < 0 || bufferOffset >= buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("bufferOffset", string.Format("Invalid destination buffer (size of {0}) offset: {1}", buffer.Length, bufferOffset));
+            }
+
+            if (copyLength + bufferOffset > buffer.Length)
+            {
+                throw new IndexOutOfRangeException(string.Format("Buffer offset '{1}' plus the bytes available '{0}' is greater than the length of the passed in buffer.", copyLength, bufferOffset));
+            }
+
+            if (fieldOffset >= copyLength)
+            {
+                return 0;
+            }
+
+            if (fieldOffset + length > copyLength)
+            {
+                copyLength = copyLength - fieldOffset;
+            }
+            else
+            {
+                copyLength = length;
+            }
+
+            Array.Copy(byteArray, fieldOffset, buffer, bufferOffset, copyLength);
+
+            return copyLength;
         }
 
         /// <summary>
