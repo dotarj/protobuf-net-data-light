@@ -107,7 +107,6 @@ namespace ProtoBuf.Data.Light
 
             this.ReadRemainingRows();
 
-            this.buffers = null;
             this.schemaTable = null;
             this.columns.Clear();
 
@@ -146,6 +145,8 @@ namespace ProtoBuf.Data.Light
                 ProtoReader.EndSubItem(this.currentResultToken, this.protoReader);
 
                 this.reachedEndOfCurrentResult = true;
+
+                this.buffers = null;
 
                 return false;
             }
@@ -209,6 +210,7 @@ namespace ProtoBuf.Data.Light
         public bool GetBoolean(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Bool;
@@ -225,6 +227,7 @@ namespace ProtoBuf.Data.Light
         public byte GetByte(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Byte;
@@ -248,6 +251,7 @@ namespace ProtoBuf.Data.Light
             // Partial implementation of SqlDataReader.GetBytes.
 
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             if (fieldOffset < 0)
@@ -308,6 +312,7 @@ namespace ProtoBuf.Data.Light
         public char GetChar(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Char;
@@ -329,6 +334,7 @@ namespace ProtoBuf.Data.Light
         public long GetChars(int i, long fieldOffset, char[] buffer, int bufferoffset, int length)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             var chars = this.buffers[i].CharArray;
@@ -355,6 +361,7 @@ namespace ProtoBuf.Data.Light
         public string GetDataTypeName(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.columns[i].DataType.Name;
@@ -371,6 +378,7 @@ namespace ProtoBuf.Data.Light
         public DateTime GetDateTime(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].DateTime;
@@ -387,6 +395,7 @@ namespace ProtoBuf.Data.Light
         public decimal GetDecimal(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Decimal;
@@ -403,6 +412,7 @@ namespace ProtoBuf.Data.Light
         public double GetDouble(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Double;
@@ -411,6 +421,7 @@ namespace ProtoBuf.Data.Light
         public Type GetFieldType(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.columns[i].DataType;
@@ -427,6 +438,7 @@ namespace ProtoBuf.Data.Light
         public float GetFloat(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Float;
@@ -443,6 +455,7 @@ namespace ProtoBuf.Data.Light
         public Guid GetGuid(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Guid;
@@ -459,6 +472,7 @@ namespace ProtoBuf.Data.Light
         public short GetInt16(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Short;
@@ -475,6 +489,7 @@ namespace ProtoBuf.Data.Light
         public int GetInt32(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Int;
@@ -491,6 +506,7 @@ namespace ProtoBuf.Data.Light
         public long GetInt64(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Long;
@@ -506,6 +522,7 @@ namespace ProtoBuf.Data.Light
         public string GetName(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.columns[i].Name;
@@ -556,6 +573,7 @@ namespace ProtoBuf.Data.Light
         public string GetString(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].String;
@@ -571,6 +589,7 @@ namespace ProtoBuf.Data.Light
         public object GetValue(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].Value;
@@ -609,6 +628,7 @@ namespace ProtoBuf.Data.Light
         public bool IsDBNull(int i)
         {
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.buffers[i].IsNull;
@@ -659,6 +679,14 @@ namespace ProtoBuf.Data.Light
             if (i < 0 || i >= this.columns.Count)
             {
                 throw new IndexOutOfRangeException();
+            }
+        }
+
+        private void ThrowIfNoData()
+        {
+            if (this.buffers == null)
+            {
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
             }
         }
 
