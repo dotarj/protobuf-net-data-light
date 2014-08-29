@@ -427,6 +427,50 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetBytes(protoBufDataReader.FieldCount, 0, new byte[0], 0, 1);
             }
 
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
+            {
+                // Act
+                protoBufDataReader.GetBytes(2, -1, new byte[9], 0, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenLengthIsLessThanZero()
+            {
+                // Act
+                protoBufDataReader.GetBytes(2, 0, new byte[9], 0, -1);
+            }
+
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionWhenBufferOffsetIsLessThanZero()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 0, new byte[9], -1, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionWhenBufferOffsetIsGreaterThanBufferSize()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 0, new byte[9], 10, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionWhenBufferOffsetIsEqualToBufferSize()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 0, new byte[9], 9, 1);
+            }
+
             [TestMethod]
             public void ShouldReturnCorrespondingValue()
             {
