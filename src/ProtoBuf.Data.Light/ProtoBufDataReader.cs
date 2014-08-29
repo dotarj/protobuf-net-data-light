@@ -7,8 +7,6 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Security;
-using System.Threading;
 
 namespace ProtoBuf.Data.Light
 {
@@ -36,7 +34,7 @@ namespace ProtoBuf.Data.Light
 
             this.currentFieldHeader = this.ReadNextFieldHeader(1);
 
-            recordsAffected = this.protoReader.ReadInt32();
+            this.recordsAffected = this.protoReader.ReadInt32();
 
             this.currentFieldHeader = this.ReadNextFieldHeader(2);
 
@@ -549,19 +547,6 @@ namespace ProtoBuf.Data.Light
             return column.Ordinal;
         }
 
-        private ProtoBufDataColumn GetColumnByName(string name)
-        {
-            foreach (var column in columns)
-            {
-                if (name == column.Name)
-                {
-                    return column;
-                }
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Gets the string value of the specified field.
         /// </summary>
@@ -688,6 +673,19 @@ namespace ProtoBuf.Data.Light
             {
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
             }
+        }
+
+        private ProtoBufDataColumn GetColumnByName(string name)
+        {
+            foreach (var column in this.columns)
+            {
+                if (name == column.Name)
+                {
+                    return column;
+                }
+            }
+
+            return null;
         }
 
         private DataTable BuildSchemaTable()
