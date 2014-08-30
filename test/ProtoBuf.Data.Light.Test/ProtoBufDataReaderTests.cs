@@ -565,6 +565,46 @@ namespace ProtoBuf.Data.Light.Test
             }
 
             [TestMethod]
+            public void ShouldReturnByteArrayLenthWhenBufferIsNull()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 0, null, 0, 9);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenByteArrayLengthAndBufferOffsetIsGreaterThanBufferLength()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 0, new byte[9], 1, 0);
+            }
+
+            [TestMethod]
+            public void ShouldReturnZeroWhenFieldOffsetIsGreaterThanByteArrayLength()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 9, new byte[9], 0, 9);
+            }
+
+            [TestMethod]
+            public void ShouldAdjustCopyLengthWhenFieldOffsetAndLengthExceedsByteArrayLength()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetBytes(2, 1, new byte[9], 0, 9);
+            }
+
+            [TestMethod]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
