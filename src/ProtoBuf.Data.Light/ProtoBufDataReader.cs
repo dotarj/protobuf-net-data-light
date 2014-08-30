@@ -112,8 +112,6 @@ namespace ProtoBuf.Data.Light
 
             if (this.currentFieldHeader == 0)
             {
-                this.IsClosed = true;
-
                 return false;
             }
 

@@ -56,13 +56,13 @@ namespace ProtoBuf.Data.Light.Test
         public class TheNextResultMethod : ProtoBufDataReaderTests
         {
             [TestMethod]
-            public void ShouldCloseWhenNooMoreResults()
+            public void ShouldNotCloseWhenNoMoreResults()
             {
                 // Act
                 protoBufDataReader.NextResult();
 
                 // Assert
-                Assert.IsTrue(protoBufDataReader.IsClosed);
+                Assert.IsFalse(protoBufDataReader.IsClosed);
             }
 
             [TestMethod]
