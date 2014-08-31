@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ProtoBuf.Data.Light</id>
+    <version>$version$</version>
+    <title>ProtoBuf.Data.Light</title>
+    <authors>Arjen Post</authors>
+    <owners>Arjen Post</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/dotarj/ProtoBuf.Data.Light</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <tags>binary serialization protocol buffers protobuf deserialization idatareader datareader</tags>
+  </metadata>
+</package>
