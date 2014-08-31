@@ -21,8 +21,8 @@ namespace ProtoBuf.Data.Light
         private readonly int recordsAffected;
 
         private ProtoBufDataBuffer[] buffers;
-        private int currentFieldHeader;
         private SubItemToken currentResultToken;
+        private SubItemToken currentRecordsToken;
         private bool disposed;
         private bool reachedEndOfCurrentResult;
         private DataTable schemaTable;
@@ -32,11 +32,11 @@ namespace ProtoBuf.Data.Light
             this.stream = stream;
             this.protoReader = new ProtoReader(this.stream, null, null);
 
-            this.currentFieldHeader = this.ReadNextFieldHeader(FieldHeaders.RecordsAffected);
+            this.ReadNextFieldHeader(FieldHeaders.RecordsAffected);
 
             this.recordsAffected = this.protoReader.ReadInt32();
 
-            this.currentFieldHeader = this.ReadNextFieldHeader(FieldHeaders.Result);
+            this.ReadNextFieldHeader(FieldHeaders.Result);
 
             this.ReadNextResult();
         }
@@ -108,9 +108,9 @@ namespace ProtoBuf.Data.Light
             this.schemaTable = null;
             this.columns.Clear();
 
-            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
+            var fieldHeader = this.protoReader.ReadFieldHeader();
 
-            if (this.currentFieldHeader == FieldHeaders.None)
+            if (fieldHeader == FieldHeaders.None)
             {
                 return false;
             }
@@ -136,8 +136,14 @@ namespace ProtoBuf.Data.Light
                 return false;
             }
 
-            if (this.currentFieldHeader == FieldHeaders.None)
+            var header = this.protoReader.ReadFieldHeader();
+
+            if (header == FieldHeaders.None)
             {
+                ProtoReader.EndSubItem(this.currentRecordsToken, this.protoReader);
+
+                this.ReadNextFieldHeader(0);
+
                 ProtoReader.EndSubItem(this.currentResultToken, this.protoReader);
 
                 this.reachedEndOfCurrentResult = true;
@@ -147,8 +153,7 @@ namespace ProtoBuf.Data.Light
                 return false;
             }
 
-            this.ReadRow();
-            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
+            this.ReadRecord();
 
             return true;
         }
@@ -726,35 +731,33 @@ namespace ProtoBuf.Data.Light
         {
             this.currentResultToken = ProtoReader.StartSubItem(this.protoReader);
 
-            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
+            this.ReadColumns();
 
-            if (this.currentFieldHeader == FieldHeaders.None)
-            {
-                this.reachedEndOfCurrentResult = true;
+            this.ReadNextFieldHeader(FieldHeaders.Records);
 
-                ProtoReader.EndSubItem(this.currentResultToken, this.protoReader);
-            }
-            else if (this.currentFieldHeader != FieldHeaders.Column)
-            {
-                throw new InvalidDataException(string.Format("Field header {0} expected, actual '{1}'.", FieldHeaders.Column, this.currentFieldHeader));
-            }
-            else
-            {
-                this.ReadColumns();
-            }
+            this.currentRecordsToken = ProtoReader.StartSubItem(this.protoReader);
         }
 
         private void ReadColumns()
         {
             var ordinal = 0;
 
-            do
+            this.ReadNextFieldHeader(FieldHeaders.Columns);
+
+            var columnsToken = ProtoReader.StartSubItem(this.protoReader);
+
+            int fieldHeader;
+
+            while ((fieldHeader = this.protoReader.ReadFieldHeader()) == FieldHeaders.Column)
             {
                 this.ReadColumn(ordinal);
 
                 ordinal++;
             }
-            while (this.currentFieldHeader == FieldHeaders.Column);
+
+            this.protoReader.ReadFieldHeader();
+
+            ProtoReader.EndSubItem(columnsToken, this.protoReader);
         }
 
         private void ReadColumn(int ordinal)
@@ -777,8 +780,6 @@ namespace ProtoBuf.Data.Light
             this.protoReader.ReadFieldHeader();
 
             ProtoReader.EndSubItem(columnToken, this.protoReader);
-
-            this.currentFieldHeader = this.protoReader.ReadFieldHeader();
         }
 
         private string ReadName()
@@ -807,6 +808,26 @@ namespace ProtoBuf.Data.Light
             return fieldHeader;
         }
 
+        private void ReadRecord()
+        {
+            if (this.buffers == null)
+            {
+                this.buffers = new ProtoBufDataBuffer[this.columns.Count];
+
+                ProtoBufDataBuffer.Initialize(this.buffers);
+            }
+            else
+            {
+                ProtoBufDataBuffer.Clear(this.buffers);
+            }
+
+            var recordToken = ProtoReader.StartSubItem(this.protoReader);
+
+            this.ReadFieldValues();
+
+            ProtoReader.EndSubItem(recordToken, this.protoReader);
+        }
+
         private void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -826,26 +847,6 @@ namespace ProtoBuf.Data.Light
 
                 this.disposed = true;
             }
-        }
-
-        private void ReadRow()
-        {
-            if (this.buffers == null)
-            {
-                this.buffers = new ProtoBufDataBuffer[this.columns.Count];
-
-                ProtoBufDataBuffer.Initialize(this.buffers);
-            }
-            else
-            {
-                ProtoBufDataBuffer.Clear(this.buffers);
-            }
-
-            var rowToken = ProtoReader.StartSubItem(this.protoReader);
-            
-            this.ReadFieldValues();
-
-            ProtoReader.EndSubItem(rowToken, this.protoReader);
         }
 
         private void ReadFieldValues()
