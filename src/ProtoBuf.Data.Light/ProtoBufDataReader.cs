@@ -305,7 +305,6 @@ namespace ProtoBuf.Data.Light
         public string GetDataTypeName(int i)
         {
             this.ThrowIfClosed();
-            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.columns[i].DataType.Name;
@@ -365,7 +364,6 @@ namespace ProtoBuf.Data.Light
         public Type GetFieldType(int i)
         {
             this.ThrowIfClosed();
-            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.columns[i].DataType;
@@ -466,7 +464,6 @@ namespace ProtoBuf.Data.Light
         public string GetName(int i)
         {
             this.ThrowIfClosed();
-            this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
             return this.columns[i].Name;
@@ -644,10 +641,14 @@ namespace ProtoBuf.Data.Light
 
             var columnName = new DataColumn("ColumnName", typeof(string));
             var columnOrdinal = new DataColumn("ColumnOrdinal", typeof(int)) { DefaultValue = 0 };
+            var columnSize = new DataColumn("ColumnSize", typeof(int)) { DefaultValue = -1 };
+            var dataType = new DataColumn("DataType", typeof(Type));
             var dataTypeName = new DataColumn("DataTypeName", typeof(string));
 
             schemaTable.Columns.Add(columnName);
             schemaTable.Columns.Add(columnOrdinal);
+            schemaTable.Columns.Add(columnSize);
+            schemaTable.Columns.Add(dataType);
             schemaTable.Columns.Add(dataTypeName);
 
             for (var i = 0; i < this.columns.Count; i++)
@@ -656,6 +657,7 @@ namespace ProtoBuf.Data.Light
 
                 schemaRow[columnName] = this.columns[i].Name;
                 schemaRow[columnOrdinal] = this.columns[i].Ordinal;
+                schemaRow[dataType] = this.columns[i].DataType;
                 schemaRow[dataTypeName] = this.columns[i].DataType.Name;
 
                 schemaTable.Rows.Add(schemaRow);

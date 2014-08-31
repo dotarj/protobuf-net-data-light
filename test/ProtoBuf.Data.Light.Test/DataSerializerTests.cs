@@ -110,6 +110,16 @@ namespace ProtoBuf.Data.Light.Test
                 AssertResult(dataReaderMock);
             }
 
+            [TestMethod]
+            public void ShouldDeserializeAValidDataTableSource()
+            {
+                // Arrange
+                var dataTable = new DataTable();
+
+                // Act
+                dataTable.Load(protoBufDataReader);
+            }
+
             private void AssertResult(DataReaderMock dataReaderMock)
             {
                 while (protoBufDataReader.Read())

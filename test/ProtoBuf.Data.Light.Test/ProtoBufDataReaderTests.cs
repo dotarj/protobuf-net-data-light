@@ -89,13 +89,6 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetFieldType(0);
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
-            public void ShouldThrowExceptionWhenNoData()
-            {
-                // Act
-                protoBufDataReader.GetFieldType(0);
-            }
-
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
@@ -136,13 +129,6 @@ namespace ProtoBuf.Data.Light.Test
 
                 // Act
                 protoBufDataReader.GetName(0);
-            }
-
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
-            public void ShouldThrowExceptionWhenNoData()
-            {
-                // Act
-                protoBufDataReader.GetFieldType(0);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -187,23 +173,6 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetDataTypeName(0);
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
-            public void ShouldThrowExceptionWhenNoData()
-            {
-                // Act
-                protoBufDataReader.GetFieldType(0);
-            }
-
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
-            public void ShouldThrowExceptionWhenIndexIsOutOfRange()
-            {
-                // Arrange
-                protoBufDataReader.Read();
-
-                // Act
-                protoBufDataReader.GetDataTypeName(protoBufDataReader.FieldCount);
-            }
-
             [TestMethod]
             public void ShouldReturnCorrespondingDataTypeName()
             {
@@ -234,13 +203,6 @@ namespace ProtoBuf.Data.Light.Test
 
                 // Act
                 protoBufDataReader.GetOrdinal("bool");
-            }
-
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
-            public void ShouldThrowExceptionWhenNoData()
-            {
-                // Act
-                protoBufDataReader.GetFieldType(0);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -282,7 +244,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetValue(0);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -366,7 +328,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetBoolean(0);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -410,7 +372,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.IsDBNull(0);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -457,7 +419,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetByte(1);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -501,7 +463,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetBytes(2, 0, new byte[9], 0, 9);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -642,7 +604,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetChar(3);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -686,7 +648,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetChars(4, 0, new char[9], 0, 9);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -827,7 +789,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetDateTime(5);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -871,7 +833,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetDecimal(6);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -915,7 +877,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetDouble(7);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -959,7 +921,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetFloat(8);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -1003,7 +965,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetGuid(9);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -1047,7 +1009,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetInt32(10);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -1091,7 +1053,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetInt64(11);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -1135,7 +1097,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetInt16(12);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -1179,7 +1141,7 @@ namespace ProtoBuf.Data.Light.Test
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Act
-                protoBufDataReader.GetFieldType(0);
+                protoBufDataReader.GetString(13);
             }
 
             [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
