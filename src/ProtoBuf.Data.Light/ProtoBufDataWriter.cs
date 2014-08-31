@@ -16,12 +16,12 @@ namespace ProtoBuf.Data.Light
 
             using (var protoWriter = new ProtoWriter(stream, null, null))
             {
-                ProtoWriter.WriteFieldHeader(1, WireType.Variant, protoWriter);
+                ProtoWriter.WriteFieldHeader(FieldHeaders.RecordsAffected, WireType.Variant, protoWriter);
                 ProtoWriter.WriteInt32(reader.RecordsAffected, protoWriter);
 
                 do
                 {
-                    ProtoWriter.WriteFieldHeader(2, WireType.StartGroup, protoWriter);
+                    ProtoWriter.WriteFieldHeader(FieldHeaders.Result, WireType.StartGroup, protoWriter);
 
                     var resultToken = ProtoWriter.StartSubItem(resultIndex, protoWriter);
                     var columns = GetColumns(reader);
@@ -61,13 +61,13 @@ namespace ProtoBuf.Data.Light
         {
             foreach (var column in columns)
             {
-                ProtoWriter.WriteFieldHeader(3, WireType.StartGroup, writer);
+                ProtoWriter.WriteFieldHeader(FieldHeaders.Column, WireType.StartGroup, writer);
 
                 var columnToken = ProtoWriter.StartSubItem(column, writer);
 
-                ProtoWriter.WriteFieldHeader(1, WireType.String, writer);
+                ProtoWriter.WriteFieldHeader(FieldHeaders.ColumnName, WireType.String, writer);
                 ProtoWriter.WriteString(column.Name, writer);
-                ProtoWriter.WriteFieldHeader(2, WireType.Variant, writer);
+                ProtoWriter.WriteFieldHeader(FieldHeaders.ColumnType, WireType.Variant, writer);
                 ProtoWriter.WriteInt32((int)column.ProtoBufDataType, writer);
 
                 ProtoWriter.EndSubItem(columnToken, writer);
@@ -80,7 +80,7 @@ namespace ProtoBuf.Data.Light
 
             while (reader.Read())
             {
-                ProtoWriter.WriteFieldHeader(4, WireType.StartGroup, writer);
+                ProtoWriter.WriteFieldHeader(FieldHeaders.Row, WireType.StartGroup, writer);
 
                 var rowToken = ProtoWriter.StartSubItem(rowIndex, writer);
 
