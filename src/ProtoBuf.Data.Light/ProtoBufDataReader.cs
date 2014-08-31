@@ -244,57 +244,11 @@ namespace ProtoBuf.Data.Light
         /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
         {
-            // Partial implementation of SqlDataReader.GetBytes.
-
             this.ThrowIfClosed();
             this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
-            if (fieldOffset < 0)
-            {
-                throw new InvalidOperationException("Invalid value for argument 'fieldOffset'. The value must be greater than or equal to 0.");
-            }
-
-            if (length < 0)
-            {
-                throw new IndexOutOfRangeException(string.Format("Data length '{0}' is less than 0.", length));
-            }
-
-            var byteArray = this.buffers[i].ByteArray;
-            var copyLength = byteArray.LongLength;
-
-            if (buffer == null)
-            {
-                return copyLength;
-            }
-
-            if (bufferOffset < 0 || bufferOffset >= buffer.Length)
-            {
-                throw new ArgumentOutOfRangeException("bufferOffset", string.Format("Invalid destination buffer (size of {0}) offset: {1}", buffer.Length, bufferOffset));
-            }
-
-            if (copyLength + bufferOffset > buffer.Length)
-            {
-                throw new IndexOutOfRangeException(string.Format("Buffer offset '{1}' plus the bytes available '{0}' is greater than the length of the passed in buffer.", copyLength, bufferOffset));
-            }
-
-            if (fieldOffset >= copyLength)
-            {
-                return 0;
-            }
-
-            if (fieldOffset + length > copyLength)
-            {
-                copyLength = copyLength - fieldOffset;
-            }
-            else
-            {
-                copyLength = length;
-            }
-
-            Array.Copy(byteArray, fieldOffset, buffer, bufferOffset, copyLength);
-
-            return copyLength;
+            return CopyArray(this.buffers[i].ByteArray, fieldOffset, buffer, bufferOffset, length);
         }
 
         /// <summary>
@@ -321,25 +275,19 @@ namespace ProtoBuf.Data.Light
         /// <param name="i">The zero-based column ordinal.</param>
         /// <param name="fieldOffset">The index within the field from which to begin the read operation.</param>
         /// <param name="buffer">The buffer into which to read the stream of bytes.</param>
-        /// <param name="bufferoffset">The index within the buffer where the write operation is to start.</param>
+        /// <param name="bufferOffset">The index within the buffer where the write operation is to start.</param>
         /// <param name="length">The maximum length to copy into the buffer.</param>
         /// <returns>The actual number of characters read.</returns>
         /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
         /// <exception cref="IndexOutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         /// <exception cref="InvalidCastException">The specified cast is not valid.</exception>
-        public long GetChars(int i, long fieldOffset, char[] buffer, int bufferoffset, int length)
+        public long GetChars(int i, long fieldOffset, char[] buffer, int bufferOffset, int length)
         {
             this.ThrowIfClosed();
             this.ThrowIfNoData();
             this.ThrowIfIndexOutOfRange(i);
 
-            var chars = this.buffers[i].CharArray;
-
-            length = Math.Min(length, chars.Length - (int)fieldOffset);
-
-            Array.Copy(chars, fieldOffset, buffer, bufferoffset, length);
-
-            return length;
+            return CopyArray(this.buffers[i].CharArray, fieldOffset, buffer, bufferOffset, length);
         }
 
         IDataReader IDataRecord.GetData(int i)
@@ -719,6 +667,57 @@ namespace ProtoBuf.Data.Light
             }
 
             return schemaTable;
+        }
+
+
+        private long CopyArray(Array source, long fieldOffset, Array buffer, int bufferOffset, int length)
+        {
+            // Partial implementation of SqlDataReader.GetBytes.
+
+            if (fieldOffset < 0)
+            {
+                throw new InvalidOperationException("Invalid value for argument 'fieldOffset'. The value must be greater than or equal to 0.");
+            }
+
+            if (length < 0)
+            {
+                throw new IndexOutOfRangeException(string.Format("Data length '{0}' is less than 0.", length));
+            }
+
+            var copyLength = source.LongLength;
+
+            if (buffer == null)
+            {
+                return copyLength;
+            }
+
+            if (bufferOffset < 0 || bufferOffset >= buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("bufferOffset", string.Format("Invalid destination buffer (size of {0}) offset: {1}", buffer.Length, bufferOffset));
+            }
+
+            if (copyLength + bufferOffset > buffer.Length)
+            {
+                throw new IndexOutOfRangeException(string.Format("Buffer offset '{1}' plus the elements available '{0}' is greater than the length of the passed in buffer.", copyLength, bufferOffset));
+            }
+
+            if (fieldOffset >= copyLength)
+            {
+                return 0;
+            }
+
+            if (fieldOffset + length > copyLength)
+            {
+                copyLength = copyLength - fieldOffset;
+            }
+            else
+            {
+                copyLength = length;
+            }
+
+            Array.Copy(source, fieldOffset, buffer, bufferOffset, copyLength);
+
+            return copyLength;
         }
 
         private void ReadNextResult()

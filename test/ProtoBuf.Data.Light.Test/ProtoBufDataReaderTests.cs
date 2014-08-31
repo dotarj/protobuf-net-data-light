@@ -699,6 +699,96 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetChars(protoBufDataReader.FieldCount, 0, new char[0], 0, 1);
             }
 
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, -1, new char[9], 0, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenLengthIsLessThanZero()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 0, new char[9], 0, -1);
+            }
+
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionWhenBufferOffsetIsLessThanZero()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 0, new char[9], -1, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionWhenBufferOffsetIsGreaterThanBufferSize()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 0, new char[9], 10, 1);
+            }
+
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionWhenBufferOffsetIsEqualToBufferSize()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 0, new char[9], 9, 1);
+            }
+
+            [TestMethod]
+            public void ShouldReturnByteArrayLenthWhenBufferIsNull()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 0, null, 0, 9);
+            }
+
+            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            public void ShouldThrowExceptionWhenByteArrayLengthAndBufferOffsetIsGreaterThanBufferLength()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 0, new char[9], 1, 0);
+            }
+
+            [TestMethod]
+            public void ShouldReturnZeroWhenFieldOffsetIsGreaterThanByteArrayLength()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 9, new char[9], 0, 9);
+            }
+
+            [TestMethod]
+            public void ShouldAdjustCopyLengthWhenFieldOffsetAndLengthExceedsByteArrayLength()
+            {
+                // Arrange
+                protoBufDataReader.Read();
+
+                // Act
+                protoBufDataReader.GetChars(4, 1, new char[9], 0, 9);
+            }
+
             [TestMethod]
             public void ShouldReturnCorrespondingValue()
             {
