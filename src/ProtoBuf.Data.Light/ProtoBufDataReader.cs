@@ -32,6 +32,10 @@ namespace ProtoBuf.Data.Light
             this.stream = stream;
             this.protoReader = new ProtoReader(this.stream, null, null);
 
+            this.ReadNextFieldHeader(FieldHeaders.Version);
+
+            this.protoReader.ReadInt32();
+
             this.ReadNextFieldHeader(FieldHeaders.RecordsAffected);
 
             this.recordsAffected = this.protoReader.ReadInt32();

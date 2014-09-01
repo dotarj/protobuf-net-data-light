@@ -16,6 +16,9 @@ namespace ProtoBuf.Data.Light
 
             using (var protoWriter = new ProtoWriter(stream, null, null))
             {
+                ProtoWriter.WriteFieldHeader(FieldHeaders.Version, WireType.Variant, protoWriter);
+                ProtoWriter.WriteInt32(1, protoWriter);
+                
                 ProtoWriter.WriteFieldHeader(FieldHeaders.RecordsAffected, WireType.Variant, protoWriter);
                 ProtoWriter.WriteInt32(reader.RecordsAffected, protoWriter);
 

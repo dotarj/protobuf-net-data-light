@@ -3,8 +3,9 @@
     internal static class FieldHeaders
     {
         internal const int None = 0;
-        internal const int RecordsAffected = 1;
-        internal const int Result = 2;
+        internal const int Version = 1;
+        internal const int RecordsAffected = 2;
+        internal const int Result = 3;
         internal const int Columns = 1;
         internal const int Column = 1;
         internal const int ColumnName = 1;
