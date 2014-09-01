@@ -12,32 +12,51 @@ namespace ProtoBuf.Data.Light
     {
         internal static void WriteReader(Stream stream, IDataReader reader)
         {
-            var resultIndex = 0;
-
             using (var protoWriter = new ProtoWriter(stream, null, null))
             {
-                ProtoWriter.WriteFieldHeader(FieldHeaders.Version, WireType.Variant, protoWriter);
-                ProtoWriter.WriteInt32(1, protoWriter);
-                
-                ProtoWriter.WriteFieldHeader(FieldHeaders.RecordsAffected, WireType.Variant, protoWriter);
-                ProtoWriter.WriteInt32(reader.RecordsAffected, protoWriter);
-
-                do
-                {
-                    ProtoWriter.WriteFieldHeader(FieldHeaders.Result, WireType.StartGroup, protoWriter);
-
-                    var resultToken = ProtoWriter.StartSubItem(resultIndex, protoWriter);
-                    var columns = GetColumns(reader);
-
-                    WriteColumns(columns, protoWriter);
-                    WriteRows(reader, columns, protoWriter);
-
-                    ProtoWriter.EndSubItem(resultToken, protoWriter);
-
-                    resultIndex++;
-                }
-                while (reader.NextResult());
+                WriteVersion(protoWriter);
+                WriteRecordsAffected(reader, protoWriter);
+                WriteResults(reader, protoWriter);
             }
+        }
+
+        private static void WriteRecordsAffected(IDataReader reader, ProtoWriter protoWriter)
+        {
+            ProtoWriter.WriteFieldHeader(FieldHeaders.RecordsAffected, WireType.Variant, protoWriter);
+            ProtoWriter.WriteInt32(reader.RecordsAffected, protoWriter);
+        }
+
+        private static void WriteVersion(ProtoWriter protoWriter)
+        {
+            ProtoWriter.WriteFieldHeader(FieldHeaders.Version, WireType.Variant, protoWriter);
+            ProtoWriter.WriteInt32(1, protoWriter);
+        }
+
+        private static void WriteResults(IDataReader reader, ProtoWriter protoWriter)
+        {
+            var resultIndex = 0;
+
+            do
+            {
+                WriteResult(reader, resultIndex, protoWriter);
+
+                resultIndex++;
+            }
+            while (reader.NextResult());
+        }
+
+        private static void WriteResult(IDataReader reader, int resultIndex, ProtoWriter protoWriter)
+        {
+            var columns = GetColumns(reader);
+            
+            ProtoWriter.WriteFieldHeader(FieldHeaders.Result, WireType.StartGroup, protoWriter);
+
+            var resultToken = ProtoWriter.StartSubItem(resultIndex, protoWriter);
+            
+            WriteColumns(columns, protoWriter);
+            WriteRecords(reader, columns, protoWriter);
+
+            ProtoWriter.EndSubItem(resultToken, protoWriter);
         }
 
         private static List<ProtoBufDataColumn> GetColumns(IDataReader dataReader)
@@ -68,114 +87,124 @@ namespace ProtoBuf.Data.Light
 
             foreach (var column in columns)
             {
-                ProtoWriter.WriteFieldHeader(FieldHeaders.Column, WireType.StartGroup, writer);
-
-                var columnToken = ProtoWriter.StartSubItem(column, writer);
-
-                ProtoWriter.WriteFieldHeader(FieldHeaders.ColumnName, WireType.String, writer);
-                ProtoWriter.WriteString(column.Name, writer);
-                ProtoWriter.WriteFieldHeader(FieldHeaders.ColumnType, WireType.Variant, writer);
-                ProtoWriter.WriteInt32((int)column.ProtoBufDataType, writer);
-
-                ProtoWriter.EndSubItem(columnToken, writer);
+                WriteColumn(writer, column);
             }
 
             ProtoWriter.EndSubItem(columnsToken, writer);
         }
 
-        private static void WriteRows(IDataReader reader, List<ProtoBufDataColumn> columns, ProtoWriter writer)
+        private static void WriteColumn(ProtoWriter writer, ProtoBufDataColumn column)
+        {
+            ProtoWriter.WriteFieldHeader(FieldHeaders.Column, WireType.StartGroup, writer);
+
+            var columnToken = ProtoWriter.StartSubItem(column, writer);
+
+            ProtoWriter.WriteFieldHeader(FieldHeaders.ColumnName, WireType.String, writer);
+            ProtoWriter.WriteString(column.Name, writer);
+            ProtoWriter.WriteFieldHeader(FieldHeaders.ColumnType, WireType.Variant, writer);
+            ProtoWriter.WriteInt32((int)column.ProtoBufDataType, writer);
+
+            ProtoWriter.EndSubItem(columnToken, writer);
+        }
+
+        private static void WriteRecords(IDataReader reader, List<ProtoBufDataColumn> columns, ProtoWriter writer)
         {
             ProtoWriter.WriteFieldHeader(FieldHeaders.Records, WireType.StartGroup, writer);
 
-            var rowsToken = ProtoWriter.StartSubItem(reader, writer);
+            var recordsToken = ProtoWriter.StartSubItem(reader, writer);
 
-            var rowIndex = 0;
+            var recordIndex = 0;
 
             while (reader.Read())
             {
-                ProtoWriter.WriteFieldHeader(FieldHeaders.Record, WireType.StartGroup, writer);
+                WriteRecord(reader, columns, writer, recordIndex);
 
-                var rowToken = ProtoWriter.StartSubItem(rowIndex, writer);
-
-                for (var i = 0; i < columns.Count; i++)
-                {
-                    var fieldHeader = i + 1;
-
-                    if (!reader.IsDBNull(columns[i].Ordinal))
-                    {
-                        switch (columns[i].ProtoBufDataType)
-                        {
-                            case ProtoBufDataType.Bool:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
-                                ProtoWriter.WriteBoolean(reader.GetBoolean(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Byte:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
-                                ProtoWriter.WriteByte(reader.GetByte(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.ByteArray:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.String, writer);
-                                var value = reader[columns[i].Ordinal];
-                                ProtoWriter.WriteBytes((byte[])value, 0, ((byte[])value).Length, writer);
-                                break;
-                            case ProtoBufDataType.Char:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
-                                ProtoWriter.WriteInt16((short)reader.GetChar(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.CharArray:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.String, writer);
-                                ProtoWriter.WriteString(new string((char[])reader[columns[i].Ordinal]), writer);
-                                break;
-                            case ProtoBufDataType.DateTime:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
-                                BclHelpers.WriteDateTime(reader.GetDateTime(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Decimal:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
-                                BclHelpers.WriteDecimal(reader.GetDecimal(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Double:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Fixed64, writer);
-                                ProtoWriter.WriteDouble(reader.GetDouble(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Float:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Fixed32, writer);
-                                ProtoWriter.WriteSingle(reader.GetFloat(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Guid:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
-                                BclHelpers.WriteGuid(reader.GetGuid(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Int:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
-                                ProtoWriter.WriteInt32(reader.GetInt32(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Long:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
-                                ProtoWriter.WriteInt64(reader.GetInt64(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.Short:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
-                                ProtoWriter.WriteInt16(reader.GetInt16(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.String:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.String, writer);
-                                ProtoWriter.WriteString(reader.GetString(columns[i].Ordinal), writer);
-                                break;
-                            case ProtoBufDataType.TimeSpan:
-                                ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
-                                BclHelpers.WriteTimeSpan((TimeSpan)reader[columns[i].Ordinal], writer);
-                                break;
-                        }
-                    }
-                }
-
-                ProtoWriter.EndSubItem(rowToken, writer);
-
-                rowIndex++;
+                recordIndex++;
             }
 
-            ProtoWriter.EndSubItem(rowsToken, writer);
+            ProtoWriter.EndSubItem(recordsToken, writer);
+        }
+
+        private static void WriteRecord(IDataReader reader, List<ProtoBufDataColumn> columns, ProtoWriter writer, int recordIndex)
+        {
+            ProtoWriter.WriteFieldHeader(FieldHeaders.Record, WireType.StartGroup, writer);
+
+            var recordToken = ProtoWriter.StartSubItem(recordIndex, writer);
+
+            for (var i = 0; i < columns.Count; i++)
+            {
+                var fieldHeader = i + 1;
+
+                if (!reader.IsDBNull(columns[i].Ordinal))
+                {
+                    switch (columns[i].ProtoBufDataType)
+                    {
+                        case ProtoBufDataType.Bool:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
+                            ProtoWriter.WriteBoolean(reader.GetBoolean(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Byte:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
+                            ProtoWriter.WriteByte(reader.GetByte(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.ByteArray:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.String, writer);
+                            var value = reader[columns[i].Ordinal];
+                            ProtoWriter.WriteBytes((byte[])value, 0, ((byte[])value).Length, writer);
+                            break;
+                        case ProtoBufDataType.Char:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
+                            ProtoWriter.WriteInt16((short)reader.GetChar(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.CharArray:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.String, writer);
+                            ProtoWriter.WriteString(new string((char[])reader[columns[i].Ordinal]), writer);
+                            break;
+                        case ProtoBufDataType.DateTime:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
+                            BclHelpers.WriteDateTime(reader.GetDateTime(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Decimal:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
+                            BclHelpers.WriteDecimal(reader.GetDecimal(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Double:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Fixed64, writer);
+                            ProtoWriter.WriteDouble(reader.GetDouble(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Float:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Fixed32, writer);
+                            ProtoWriter.WriteSingle(reader.GetFloat(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Guid:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
+                            BclHelpers.WriteGuid(reader.GetGuid(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Int:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
+                            ProtoWriter.WriteInt32(reader.GetInt32(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Long:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
+                            ProtoWriter.WriteInt64(reader.GetInt64(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.Short:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.Variant, writer);
+                            ProtoWriter.WriteInt16(reader.GetInt16(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.String:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.String, writer);
+                            ProtoWriter.WriteString(reader.GetString(columns[i].Ordinal), writer);
+                            break;
+                        case ProtoBufDataType.TimeSpan:
+                            ProtoWriter.WriteFieldHeader(fieldHeader, WireType.StartGroup, writer);
+                            BclHelpers.WriteTimeSpan((TimeSpan)reader[columns[i].Ordinal], writer);
+                            break;
+                    }
+                }
+            }
+
+            ProtoWriter.EndSubItem(recordToken, writer);
         }
     }
 }
