@@ -32,17 +32,13 @@ namespace ProtoBuf.Data.Light
             this.stream = stream;
             this.protoReader = new ProtoReader(this.stream, null, null);
 
-            this.ReadNextFieldHeader(FieldHeaders.Version);
+            this.ReadVersion();
 
-            this.protoReader.ReadInt32();
+            this.recordsAffected = this.ReadRecordsAffected();
 
-            this.ReadNextFieldHeader(FieldHeaders.RecordsAffected);
+            this.ReadFieldHeader(FieldHeaders.Result);
 
-            this.recordsAffected = this.protoReader.ReadInt32();
-
-            this.ReadNextFieldHeader(FieldHeaders.Result);
-
-            this.ReadNextResult();
+            this.ReadResult();
         }
 
         ~ProtoBufDataReader()
@@ -107,21 +103,19 @@ namespace ProtoBuf.Data.Light
         {
             this.ThrowIfClosed();
 
-            this.ReadRemainingRows();
+            this.ReadRemainingRecords();
 
             this.schemaTable = null;
             this.columns.Clear();
 
-            var fieldHeader = this.protoReader.ReadFieldHeader();
-
-            if (fieldHeader == FieldHeaders.None)
+            if (this.protoReader.ReadFieldHeader() == FieldHeaders.None)
             {
                 return false;
             }
 
             this.reachedEndOfCurrentResult = false;
 
-            this.ReadNextResult();
+            this.ReadResult();
 
             return true;
         }
@@ -140,19 +134,9 @@ namespace ProtoBuf.Data.Light
                 return false;
             }
 
-            var header = this.protoReader.ReadFieldHeader();
-
-            if (header == FieldHeaders.None)
+            if (this.protoReader.ReadFieldHeader() == FieldHeaders.None)
             {
-                ProtoReader.EndSubItem(this.currentRecordsToken, this.protoReader);
-
-                this.ReadNextFieldHeader(0);
-
-                ProtoReader.EndSubItem(this.currentResultToken, this.protoReader);
-
-                this.reachedEndOfCurrentResult = true;
-
-                this.buffers = null;
+                this.EndReadResult();
 
                 return false;
             }
@@ -603,150 +587,61 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        private void ThrowIfClosed([CallerMemberName]string memberName = "")
+        private int ReadFieldHeader(int expectedFieldHeader)
         {
-            if (this.IsClosed)
+            var fieldHeader = this.protoReader.ReadFieldHeader();
+
+            if (fieldHeader != expectedFieldHeader)
             {
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.", memberName));
+                throw new InvalidDataException(string.Format("Field header {0} expected, actual '{1}'.", expectedFieldHeader, fieldHeader));
             }
+
+            return fieldHeader;
         }
 
-        private void ThrowIfIndexOutOfRange(int i)
+        private void ReadVersion()
         {
-            if (i < 0 || i >= this.columns.Count)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            this.ReadFieldHeader(FieldHeaders.Version);
+
+            this.protoReader.ReadInt32();
         }
 
-        private void ThrowIfNoData()
+        private int ReadRecordsAffected()
         {
-            if (this.buffers == null)
-            {
-                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
-            }
+            this.ReadFieldHeader(FieldHeaders.RecordsAffected);
+
+            return this.protoReader.ReadInt32();
         }
 
-        private ProtoBufDataColumn GetColumnByName(string name)
-        {
-            foreach (var column in this.columns)
-            {
-                if (name == column.Name)
-                {
-                    return column;
-                }
-            }
-
-            return null;
-        }
-
-        private DataTable BuildSchemaTable()
-        {
-            var schemaTable = new DataTable("SchemaTable")
-            {
-                Locale = CultureInfo.InvariantCulture,
-                MinimumCapacity = this.columns.Count
-            };
-
-            var columnName = new DataColumn("ColumnName", typeof(string));
-            var columnOrdinal = new DataColumn("ColumnOrdinal", typeof(int)) { DefaultValue = 0 };
-            var columnSize = new DataColumn("ColumnSize", typeof(int)) { DefaultValue = -1 };
-            var dataType = new DataColumn("DataType", typeof(Type));
-            var dataTypeName = new DataColumn("DataTypeName", typeof(string));
-
-            schemaTable.Columns.Add(columnName);
-            schemaTable.Columns.Add(columnOrdinal);
-            schemaTable.Columns.Add(columnSize);
-            schemaTable.Columns.Add(dataType);
-            schemaTable.Columns.Add(dataTypeName);
-
-            for (var i = 0; i < this.columns.Count; i++)
-            {
-                var schemaRow = schemaTable.NewRow();
-
-                schemaRow[columnName] = this.columns[i].Name;
-                schemaRow[columnOrdinal] = this.columns[i].Ordinal;
-                schemaRow[dataType] = this.columns[i].DataType;
-                schemaRow[dataTypeName] = this.columns[i].DataType.Name;
-
-                schemaTable.Rows.Add(schemaRow);
-            }
-
-            foreach (DataColumn column in schemaTable.Columns)
-            {
-                column.ReadOnly = true;
-            }
-
-            return schemaTable;
-        }
-
-
-        private long CopyArray(Array source, long fieldOffset, Array buffer, int bufferOffset, int length)
-        {
-            // Partial implementation of SqlDataReader.GetBytes.
-
-            if (fieldOffset < 0)
-            {
-                throw new InvalidOperationException("Invalid value for argument 'fieldOffset'. The value must be greater than or equal to 0.");
-            }
-
-            if (length < 0)
-            {
-                throw new IndexOutOfRangeException(string.Format("Data length '{0}' is less than 0.", length));
-            }
-
-            var copyLength = source.LongLength;
-
-            if (buffer == null)
-            {
-                return copyLength;
-            }
-
-            if (bufferOffset < 0 || bufferOffset >= buffer.Length)
-            {
-                throw new ArgumentOutOfRangeException("bufferOffset", string.Format("Invalid destination buffer (size of {0}) offset: {1}", buffer.Length, bufferOffset));
-            }
-
-            if (copyLength + bufferOffset > buffer.Length)
-            {
-                throw new IndexOutOfRangeException(string.Format("Buffer offset '{1}' plus the elements available '{0}' is greater than the length of the passed in buffer.", copyLength, bufferOffset));
-            }
-
-            if (fieldOffset >= copyLength)
-            {
-                return 0;
-            }
-
-            if (fieldOffset + length > copyLength)
-            {
-                copyLength = copyLength - fieldOffset;
-            }
-            else
-            {
-                copyLength = length;
-            }
-
-            Array.Copy(source, fieldOffset, buffer, bufferOffset, copyLength);
-
-            return copyLength;
-        }
-
-        private void ReadNextResult()
+        private void ReadResult()
         {
             this.currentResultToken = ProtoReader.StartSubItem(this.protoReader);
 
             this.ReadColumns();
 
-            this.ReadNextFieldHeader(FieldHeaders.Records);
+            this.ReadFieldHeader(FieldHeaders.Records);
 
             this.currentRecordsToken = ProtoReader.StartSubItem(this.protoReader);
+        }
+
+        private void EndReadResult()
+        {
+            ProtoReader.EndSubItem(this.currentRecordsToken, this.protoReader);
+
+            this.ReadFieldHeader(0);
+
+            ProtoReader.EndSubItem(this.currentResultToken, this.protoReader);
+
+            this.reachedEndOfCurrentResult = true;
+
+            this.buffers = null;
         }
 
         private void ReadColumns()
         {
             var ordinal = 0;
 
-            this.ReadNextFieldHeader(FieldHeaders.Columns);
+            this.ReadFieldHeader(FieldHeaders.Columns);
 
             var columnsToken = ProtoReader.StartSubItem(this.protoReader);
 
@@ -768,8 +663,8 @@ namespace ProtoBuf.Data.Light
         {
             var columnToken = ProtoReader.StartSubItem(this.protoReader);
 
-            var name = this.ReadName();
-            var protoBufDataType = this.ReadDataType();
+            var name = this.ReadColumnName();
+            var protoBufDataType = this.ReadColumnType();
 
             var column = new ProtoBufDataColumn
             {
@@ -786,30 +681,18 @@ namespace ProtoBuf.Data.Light
             ProtoReader.EndSubItem(columnToken, this.protoReader);
         }
 
-        private string ReadName()
+        private string ReadColumnName()
         {
-            this.protoReader.ReadFieldHeader();
+            this.ReadFieldHeader(FieldHeaders.ColumnName);
 
             return this.protoReader.ReadString();
         }
 
-        private ProtoBufDataType ReadDataType()
+        private ProtoBufDataType ReadColumnType()
         {
-            this.protoReader.ReadFieldHeader();
+            this.ReadFieldHeader(FieldHeaders.ColumnType);
 
             return (ProtoBufDataType)this.protoReader.ReadInt32();
-        }
-
-        private int ReadNextFieldHeader(int expectedFieldHeader)
-        {
-            var fieldHeader = this.protoReader.ReadFieldHeader();
-
-            if (fieldHeader != expectedFieldHeader)
-            {
-                throw new InvalidDataException(string.Format("Field header {0} expected, actual '{1}'.", expectedFieldHeader, fieldHeader));
-            }
-
-            return fieldHeader;
         }
 
         private void ReadRecord()
@@ -827,33 +710,12 @@ namespace ProtoBuf.Data.Light
 
             var recordToken = ProtoReader.StartSubItem(this.protoReader);
 
-            this.ReadFieldValues();
+            this.ReadRecordValues();
 
             ProtoReader.EndSubItem(recordToken, this.protoReader);
         }
 
-        private void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    if (this.protoReader != null)
-                    {
-                        this.protoReader.Dispose();
-                    }
-
-                    if (this.stream != null)
-                    {
-                        this.stream.Dispose();
-                    }
-                }
-
-                this.disposed = true;
-            }
-        }
-
-        private void ReadFieldValues()
+        private void ReadRecordValues()
         {
             int fieldHeader;
 
@@ -925,14 +787,160 @@ namespace ProtoBuf.Data.Light
                         break;
                 }
             }
-
-            this.protoReader.ReadFieldHeader();
         }
 
-        private void ReadRemainingRows()
+        private void ReadRemainingRecords()
         {
             while (this.Read())
             {
+            }
+        }
+
+        private DataTable BuildSchemaTable()
+        {
+            var schemaTable = new DataTable("SchemaTable")
+            {
+                Locale = CultureInfo.InvariantCulture,
+                MinimumCapacity = this.columns.Count
+            };
+
+            var columnName = new DataColumn("ColumnName", typeof(string));
+            var columnOrdinal = new DataColumn("ColumnOrdinal", typeof(int)) { DefaultValue = 0 };
+            var columnSize = new DataColumn("ColumnSize", typeof(int)) { DefaultValue = -1 };
+            var dataType = new DataColumn("DataType", typeof(Type));
+            var dataTypeName = new DataColumn("DataTypeName", typeof(string));
+
+            schemaTable.Columns.Add(columnName);
+            schemaTable.Columns.Add(columnOrdinal);
+            schemaTable.Columns.Add(columnSize);
+            schemaTable.Columns.Add(dataType);
+            schemaTable.Columns.Add(dataTypeName);
+
+            for (var i = 0; i < this.columns.Count; i++)
+            {
+                var schemaRow = schemaTable.NewRow();
+
+                schemaRow[columnName] = this.columns[i].Name;
+                schemaRow[columnOrdinal] = this.columns[i].Ordinal;
+                schemaRow[dataType] = this.columns[i].DataType;
+                schemaRow[dataTypeName] = this.columns[i].DataType.Name;
+
+                schemaTable.Rows.Add(schemaRow);
+            }
+
+            foreach (DataColumn column in schemaTable.Columns)
+            {
+                column.ReadOnly = true;
+            }
+
+            return schemaTable;
+        }
+
+        private long CopyArray(Array source, long fieldOffset, Array buffer, int bufferOffset, int length)
+        {
+            // Partial implementation of SqlDataReader.GetBytes.
+
+            if (fieldOffset < 0)
+            {
+                throw new InvalidOperationException("Invalid value for argument 'fieldOffset'. The value must be greater than or equal to 0.");
+            }
+
+            if (length < 0)
+            {
+                throw new IndexOutOfRangeException(string.Format("Data length '{0}' is less than 0.", length));
+            }
+
+            var copyLength = source.LongLength;
+
+            if (buffer == null)
+            {
+                return copyLength;
+            }
+
+            if (bufferOffset < 0 || bufferOffset >= buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("bufferOffset", string.Format("Invalid destination buffer (size of {0}) offset: {1}", buffer.Length, bufferOffset));
+            }
+
+            if (copyLength + bufferOffset > buffer.Length)
+            {
+                throw new IndexOutOfRangeException(string.Format("Buffer offset '{1}' plus the elements available '{0}' is greater than the length of the passed in buffer.", copyLength, bufferOffset));
+            }
+
+            if (fieldOffset >= copyLength)
+            {
+                return 0;
+            }
+
+            if (fieldOffset + length > copyLength)
+            {
+                copyLength = copyLength - fieldOffset;
+            }
+            else
+            {
+                copyLength = length;
+            }
+
+            Array.Copy(source, fieldOffset, buffer, bufferOffset, copyLength);
+
+            return copyLength;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    if (this.protoReader != null)
+                    {
+                        this.protoReader.Dispose();
+                    }
+
+                    if (this.stream != null)
+                    {
+                        this.stream.Dispose();
+                    }
+                }
+
+                this.disposed = true;
+            }
+        }
+
+        private ProtoBufDataColumn GetColumnByName(string name)
+        {
+            foreach (var column in this.columns)
+            {
+                if (name == column.Name)
+                {
+                    return column;
+                }
+            }
+
+            return null;
+        }
+        
+        private void ThrowIfClosed([CallerMemberName]string memberName = "")
+        {
+            if (this.IsClosed)
+            {
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.", memberName));
+            }
+        }
+
+        private void ThrowIfIndexOutOfRange(int i)
+        {
+            if (i < 0 || i >= this.columns.Count)
+            {
+                throw new IndexOutOfRangeException();
+            }
+        }
+
+        private void ThrowIfNoData()
+        {
+            if (this.buffers == null)
+            {
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
             }
         }
     }
