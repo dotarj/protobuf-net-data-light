@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProtoBuf.Data.Light</RootNamespace>
-    <AssemblyName>ProtoBuf.Data.Light</AssemblyName>
+    <AssemblyName>protobuf-net-data-light</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
