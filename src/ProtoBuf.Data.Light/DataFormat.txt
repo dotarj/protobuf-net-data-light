@@ -1,5 +1,6 @@
-<1 Variant> Records affected
-<2 StartGroup> Result
+<1 Variant> Data format version
+<2 Variant> Records affected
+<3 StartGroup> Result
 <SubItem>
     <1 StartGroup> Columns
 	<SubItem>
@@ -13,7 +14,7 @@
 	<SubItem>
 		<1 StartGroup> Record
 		<SubItem>
-			<(# Column index) (corresponding type)> Each field
+			<(# Column index) (corresponding type)> Field value
 		</SubItem>
     </SubItem>
 </SubItem>
