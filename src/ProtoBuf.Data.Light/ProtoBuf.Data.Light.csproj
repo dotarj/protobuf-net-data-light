@@ -49,7 +49,6 @@
     <Compile Include="ProtoBufDataType.cs" />
     <Compile Include="ProtoBufDataWriter.cs" />
     <Compile Include="Throw.cs" />
-    <Compile Include="UnsupportedDataTypeException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

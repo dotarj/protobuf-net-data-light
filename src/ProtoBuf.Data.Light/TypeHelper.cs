@@ -9,7 +9,7 @@ namespace ProtoBuf.Data.Light
 {
     internal static class TypeHelper
     {
-        internal static readonly Type[] SupportedDataTypes = new []
+        private static readonly Type[] SupportedDataTypes = new []
         {
             typeof(bool),
             typeof(byte),
@@ -28,7 +28,7 @@ namespace ProtoBuf.Data.Light
             typeof(TimeSpan)
         };
 
-        private static readonly IDictionary<Type, ProtoBufDataType> ProtoBufTypeByType = new Dictionary<Type, ProtoBufDataType>
+        private static readonly IDictionary<Type, ProtoBufDataType> ProtoBufDataTypeByType = new Dictionary<Type, ProtoBufDataType>
         {
             { typeof(bool), ProtoBufDataType.Bool },
             { typeof(byte), ProtoBufDataType.Byte },
@@ -47,7 +47,7 @@ namespace ProtoBuf.Data.Light
             { typeof(TimeSpan), ProtoBufDataType.TimeSpan },
         };
 
-        private static readonly IDictionary<ProtoBufDataType, Type> TypeByProtoBufType = new Dictionary<ProtoBufDataType, Type>
+        private static readonly IDictionary<ProtoBufDataType, Type> TypeByProtoBufDataType = new Dictionary<ProtoBufDataType, Type>
         {
             { ProtoBufDataType.Bool, typeof(bool) },
             { ProtoBufDataType.Byte, typeof(byte) },
@@ -66,28 +66,47 @@ namespace ProtoBuf.Data.Light
             { ProtoBufDataType.TimeSpan, typeof(TimeSpan) },
         };
 
+        private static string supportedDataTypes;
+
         internal static ProtoBufDataType GetProtoBufDataType(Type type)
         {
             ProtoBufDataType value;
 
-            if (ProtoBufTypeByType.TryGetValue(type, out value))
+            if (ProtoBufDataTypeByType.TryGetValue(type, out value))
             {
                 return value;
             }
 
-            throw new UnsupportedDataTypeException(type.ToString());
+            throw new NotSupportedException(string.Format("The data type '{0}' is not supported. The supported data types are: {1}.", type.Name, supportedDataTypes));
         }
 
         internal static Type GetType(ProtoBufDataType type)
         {
             Type value;
 
-            if (TypeByProtoBufType.TryGetValue(type, out value))
+            if (TypeByProtoBufDataType.TryGetValue(type, out value))
             {
                 return value;
             }
 
             throw new InvalidDataException(string.Format("Undefined ProtoBufDataType '{0}'.", (int)type));
+        }
+
+        private static string GetSupportedDataTypes()
+        {
+            if (supportedDataTypes == null)
+            {
+                var dataTypeNames = new string[TypeHelper.SupportedDataTypes.Length];
+
+                for (var i = 0; i < TypeHelper.SupportedDataTypes.Length; i++)
+                {
+                    dataTypeNames[i] = TypeHelper.SupportedDataTypes[i].Name;
+                }
+
+                supportedDataTypes = string.Join(", ", dataTypeNames);
+            }
+
+            return supportedDataTypes;
         }
     }
 }
