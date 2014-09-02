@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>protobuf-net-data-light</id>
+    <version>$version$</version>
+    <title>protobuf-net-data-light</title>
+    <authors>Arjen Post</authors>
+    <owners>Arjen Post</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/dotarj/protobuf-net-data-light</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>ProtoBuf Data Light: a lightweight IDataReader serializer. This library serializes an IDataReader to a binary format using Marc Gravell's protobuf-net.</description>
+    <tags>binary serialization protocol buffers protobuf deserialization idatareader datareader</tags>
+    <dependencies>
+      <dependency id="protobuf-net" version="2.0.0.480" />
+    </dependencies>
+    <files>
+      <file src="ProtoBuf.Data.Light.Net20\bin\Release\protobuf-net-data-light.dll" target="lib\net20\protobuf-net-data-light.dll" />
+      <file src="ProtoBuf.Data.Light.Net20\bin\Release\protobuf-net-data-light.pdb" target="lib\net20\protobuf-net-data-light.pdb" />
+      <file src="ProtoBuf.Data.Light.Net20\bin\Release\protobuf-net-data-light.xml" target="lib\net20\protobuf-net-data-light.xml" />
+
+      <file src="ProtoBuf.Data.Light.Net30\bin\Release\protobuf-net-data-light.dll" target="lib\net30\protobuf-net-data-light.dll" />
+      <file src="ProtoBuf.Data.Light.Net30\bin\Release\protobuf-net-data-light.pdb" target="lib\net30\protobuf-net-data-light.pdb" />
+      <file src="ProtoBuf.Data.Light.Net30\bin\Release\protobuf-net-data-light.xml" target="lib\net30\protobuf-net-data-light.xml" />
+
+      <file src="ProtoBuf.Data.Light.Net35\bin\Release\protobuf-net-data-light.dll" target="lib\net35\protobuf-net-data-light.dll" />
+      <file src="ProtoBuf.Data.Light.Net35\bin\Release\protobuf-net-data-light.pdb" target="lib\net35\protobuf-net-data-light.pdb" />
+      <file src="ProtoBuf.Data.Light.Net35\bin\Release\protobuf-net-data-light.xml" target="lib\net35\protobuf-net-data-light.xml" />
+
+      <file src="ProtoBuf.Data.Light.Net40\bin\Release\protobuf-net-data-light.dll" target="lib\net40\protobuf-net-data-light.dll" />
+      <file src="ProtoBuf.Data.Light.Net40\bin\Release\protobuf-net-data-light.pdb" target="lib\net40\protobuf-net-data-light.pdb" />
+      <file src="ProtoBuf.Data.Light.Net40\bin\Release\protobuf-net-data-light.xml" target="lib\net40\protobuf-net-data-light.xml" />
+
+      <file src="ProtoBuf.Data.Light\bin\Release\protobuf-net-data-light.dll" target="lib\net45\protobuf-net-data-light.dll" />
+      <file src="ProtoBuf.Data.Light\bin\Release\protobuf-net-data-light.pdb" target="lib\net45\protobuf-net-data-light.pdb" />
+      <file src="ProtoBuf.Data.Light\bin\Release\protobuf-net-data-light.xml" target="lib\net45\protobuf-net-data-light.xml" />
+    </files>
+  </metadata>
+</package>
