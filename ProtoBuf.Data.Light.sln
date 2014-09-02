@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Net30",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Net35", "src\ProtoBuf.Data.Light.Net35\ProtoBuf.Data.Light.Net35.csproj", "{54DA644E-C22F-47CC-801F-0EE0BA2E1268}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Net40", "..\protobuf-net-data-\src\ProtoBuf.Data.Light.Net40\ProtoBuf.Data.Light.Net40.csproj", "{23E0664A-E482-4A25-B881-9C3F1CB3309B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Net40", "src\ProtoBuf.Data.Light.Net40\ProtoBuf.Data.Light.Net40.csproj", "{23E0664A-E482-4A25-B881-9C3F1CB3309B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
