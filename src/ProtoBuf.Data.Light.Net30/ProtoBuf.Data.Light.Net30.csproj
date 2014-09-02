@@ -28,6 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\protobuf-net-data-light.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net">
