@@ -920,6 +920,7 @@ namespace ProtoBuf.Data.Light
             return null;
         }
         
+#if NET45
         private void ThrowIfClosed([CallerMemberName]string memberName = "")
         {
             if (this.IsClosed)
@@ -927,6 +928,15 @@ namespace ProtoBuf.Data.Light
                 throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.", memberName));
             }
         }
+#else
+        private void ThrowIfClosed()
+        {
+            if (this.IsClosed)
+            {
+                throw new InvalidOperationException("Invalid attempt to call method when reader is closed.");
+            }
+        }
+#endif
 
         private void ThrowIfIndexOutOfRange(int i)
         {

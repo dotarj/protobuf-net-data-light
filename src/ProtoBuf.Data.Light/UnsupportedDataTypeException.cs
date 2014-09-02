@@ -14,7 +14,14 @@ namespace ProtoBuf.Data.Light
 
         static UnsupportedDataTypeException()
         {
-            supportedDataTypes = string.Join(", ", TypeHelper.SupportedDataTypes);
+            var dataTypeNames = new string[TypeHelper.SupportedDataTypes.Length];
+
+            for (var i = 0; i < TypeHelper.SupportedDataTypes.Length; i++)
+            {
+                dataTypeNames[i] = TypeHelper.SupportedDataTypes[i].Name;
+            }
+
+            supportedDataTypes = string.Join(", ", dataTypeNames);
         }
 
         internal UnsupportedDataTypeException(string dataTypeName)

@@ -9,7 +9,7 @@ namespace ProtoBuf.Data.Light
 {
     internal static class TypeHelper
     {
-        internal static readonly IEnumerable<Type> SupportedDataTypes = new []
+        internal static readonly Type[] SupportedDataTypes = new []
         {
             typeof(bool),
             typeof(byte),

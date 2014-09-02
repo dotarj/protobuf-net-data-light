@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EC6D4949-468F-4991-BD40-50667F01FC8D}</ProjectGuid>
+    <ProjectGuid>{826D9481-D91C-4430-A265-7AF9E4C77C3A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProtoBuf.Data.Light</RootNamespace>
+    <RootNamespace>ProtoBuf.Data.Light.Net20</RootNamespace>
     <AssemblyName>protobuf-net-data-light</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -31,24 +31,46 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <HintPath>..\..\packages\protobuf-net.2.0.0.668\lib\net20\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FieldHeaders.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeHelper.cs" />
-    <Compile Include="DataSerializer.cs" />
-    <Compile Include="ProtoBufDataBuffer.cs" />
-    <Compile Include="ProtoBufDataColumn.cs" />
-    <Compile Include="ProtoBufDataReader.cs" />
-    <Compile Include="ProtoBufDataType.cs" />
-    <Compile Include="ProtoBufDataWriter.cs" />
-    <Compile Include="Throw.cs" />
-    <Compile Include="UnsupportedDataTypeException.cs" />
+    <Compile Include="..\ProtoBuf.Data.Light\DataSerializer.cs">
+      <Link>DataSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\FieldHeaders.cs">
+      <Link>FieldHeaders.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\ProtoBufDataBuffer.cs">
+      <Link>ProtoBufDataBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\ProtoBufDataColumn.cs">
+      <Link>ProtoBufDataColumn.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\ProtoBufDataReader.cs">
+      <Link>ProtoBufDataReader.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\ProtoBufDataType.cs">
+      <Link>ProtoBufDataType.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\ProtoBufDataWriter.cs">
+      <Link>ProtoBufDataWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\Throw.cs">
+      <Link>Throw.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\TypeHelper.cs">
+      <Link>TypeHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\ProtoBuf.Data.Light\UnsupportedDataTypeException.cs">
+      <Link>UnsupportedDataTypeException.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
