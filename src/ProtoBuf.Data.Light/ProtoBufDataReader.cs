@@ -47,7 +47,7 @@ namespace ProtoBuf.Data.Light
         }
 
         /// <summary>
-        /// Closes the <see cref="ProotoBufDataReader"/> object.
+        /// Closes the <see cref="ProtoBufDataReader"/> object.
         /// </summary>
         public void Close()
         {
@@ -354,6 +354,15 @@ namespace ProtoBuf.Data.Light
             return this.buffers[i].Double;
         }
 
+        /// <summary>
+        /// Gets the <see cref="Type"/> that is the data type of the object.
+        /// </summary>
+        /// <param name="i">The zero-based column ordinal.</param>
+        /// <returns>The <see cref="Type"/> that is the data type of the object. If the type does not
+        /// exist on the client, in the case of a User-Defined Type (UDT) returned from
+        /// the database, GetFieldType returns null.</returns>
+        /// <exception cref="InvalidOperationException">The <see cref="ProtoBufDataReader"/> is closed.</exception>
+        /// <exception cref="IndexOutOfRangeException">The index passed was outside the range of 0 through System.Data.IDataRecord.FieldCount.</exception>
         public Type GetFieldType(int i)
         {
             this.ThrowIfClosed();

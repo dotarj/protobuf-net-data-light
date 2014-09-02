@@ -6,6 +6,9 @@ using System.IO;
 
 namespace ProtoBuf.Data.Light
 {
+    /// <summary>
+    /// Serializes and deserializes an <see cref="IDataReader"/> in binary format.
+    /// </summary>
     public static class DataSerializer
     {
         /// <summary>
@@ -13,13 +16,13 @@ namespace ProtoBuf.Data.Light
         /// </summary>
         /// <param name="stream">The stream to which the <see cref="IDataReader"/> is to be serialized.</param>
         /// <param name="reader">The <see cref="IDataReader"/> to serialize.</param>
-        /// <exception cref="ArgumentNullException">The stream is null. -or-The reader is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The stream is null. -or-The reader is null.</exception>
         /// <exception cref="UnsupportedDataTypeException">A data type is not supperted.</exception>
         public static void Serialize(Stream stream, IDataReader reader)
         {
             Throw.IfNull(stream, "stream");
             Throw.IfNull(reader, "reader");
-
+            
             ProtoBufDataWriter.WriteReader(stream, reader);
         }
 
