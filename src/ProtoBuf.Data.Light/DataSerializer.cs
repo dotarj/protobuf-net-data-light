@@ -17,7 +17,7 @@ namespace ProtoBuf.Data.Light
         /// <param name="stream">The stream to which the <see cref="IDataReader"/> is to be serialized.</param>
         /// <param name="reader">The <see cref="IDataReader"/> to serialize.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null. -or-The reader is null.</exception>
-        /// <exception cref="UnsupportedDataTypeException">A data type is not supperted.</exception>
+        /// <exception cref="System.NotSupportedException">A data type is not supperted.</exception>
         public static void Serialize(Stream stream, IDataReader reader)
         {
             Throw.IfNull(stream, "stream");

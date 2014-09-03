@@ -41,6 +41,10 @@ namespace ProtoBuf.Data.Light
             this.ReadResult();
         }
 
+        /// <summary>
+        /// Allows an object to try to free resources and perform other cleanup operations before it is reclaimed 
+        /// by garbage collection.
+        /// </summary>
         ~ProtoBufDataReader()
         {
             this.Dispose(false);
