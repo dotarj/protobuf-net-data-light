@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>protobuf-net-data-light</id>
-    <version>1.0.0-beta</version>
+    <version>1.0.0</version>
     <title>protobuf-net-data-light</title>
     <authors>Arjen Post</authors>
     <owners>Arjen Post</owners>
