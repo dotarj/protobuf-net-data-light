@@ -12,7 +12,7 @@
     <description>ProtoBuf Data Light: a lightweight IDataReader serializer. This library serializes an IDataReader to a binary format using Marc Gravell's protobuf-net.</description>
     <tags>binary serialization protocol buffers protobuf deserialization idatareader datareader</tags>
     <dependencies>
-      <dependency id="protobuf-net" version="2.0.0.480" />
+      <dependency id="protobuf-net" version="2.0.0.668" />
     </dependencies>
   </metadata>
   <files>
