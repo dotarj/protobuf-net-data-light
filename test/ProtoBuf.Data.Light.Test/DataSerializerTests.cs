@@ -1,21 +1,19 @@
 ﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
 // Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using Xunit;
 
 namespace ProtoBuf.Data.Light.Test
 {
-    [TestClass]
     public class DataSerializerTests
     {
         private IDataReader protoBufDataReader;
-
-        [TestInitialize]
-        public void TestInitialize()
+        
+        public DataSerializerTests()
         {
             var dataReaderMock = new DataReaderMock(false);
             var memoryStream = new MemoryStream();
@@ -26,31 +24,30 @@ namespace ProtoBuf.Data.Light.Test
 
             this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
         }
-
-        [TestClass]
+        
         public class TheSerializeMethod : DataSerializerTests
         {
-            [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+            [Fact]
             public void ShouldThrowExceptionIfStreamIsNull()
             {
                 // Arrange
                 var dataReaderMock = new DataReaderMock(false);
 
-                // Act
-                DataSerializer.Serialize(null, dataReaderMock);
+                // Assert
+                Assert.Throws<ArgumentNullException>("stream", () => DataSerializer.Serialize(null, dataReaderMock));
             }
 
-            [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+            [Fact]
             public void ShouldThrowExceptionIfDataReaderIsNull()
             {
                 // Arrange
                 var memoryStream = new MemoryStream();
 
-                // Act
-                DataSerializer.Serialize(memoryStream, null);
+                // Assert
+                Assert.Throws<ArgumentNullException>("reader", () => DataSerializer.Serialize(memoryStream, null));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldDeserializeAllResults()
             {
                 // Arrange
@@ -68,7 +65,7 @@ namespace ProtoBuf.Data.Light.Test
                 // Assert
                 AssertResult(dataReaderMock);
 
-                Assert.IsTrue(this.protoBufDataReader.NextResult());
+                Assert.True(this.protoBufDataReader.NextResult());
 
                 dataReaderMock.NextResult();
 
@@ -76,7 +73,7 @@ namespace ProtoBuf.Data.Light.Test
 
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldDeserializeAllRows()
             {
                 // Arrange
@@ -97,10 +94,10 @@ namespace ProtoBuf.Data.Light.Test
                 }
 
                 // Assert
-                Assert.AreEqual(mockReadCount, protoBufReadCount);
+                Assert.Equal(mockReadCount, protoBufReadCount);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldDeserializeValidProperties()
             {
                 // Arrange
@@ -110,7 +107,7 @@ namespace ProtoBuf.Data.Light.Test
                 AssertResult(dataReaderMock);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldDeserializeAValidDataTableSource()
             {
                 // Arrange
@@ -126,21 +123,21 @@ namespace ProtoBuf.Data.Light.Test
                 {
                     dataReaderMock.Read();
 
-                    Assert.AreEqual(dataReaderMock.GetBoolean(0), protoBufDataReader.GetBoolean(0));
-                    Assert.AreEqual(dataReaderMock.GetByte(1), protoBufDataReader.GetByte(1));
-                    //Assert.AreEqual(dataReaderMock.GetBytes(2), dataReader.GetBytes(2));
-                    Assert.AreEqual(dataReaderMock.GetChar(3), protoBufDataReader.GetChar(3));
-                    //Assert.AreEqual(dataReaderMock.GetChars(4), dataReader.GetChars(4));
-                    Assert.AreEqual(dataReaderMock.GetDateTime(5), protoBufDataReader.GetDateTime(5));
-                    Assert.AreEqual(dataReaderMock.GetDecimal(6), protoBufDataReader.GetDecimal(6));
-                    Assert.AreEqual(dataReaderMock.GetDouble(7), protoBufDataReader.GetDouble(7));
-                    Assert.AreEqual(dataReaderMock.GetFloat(8), protoBufDataReader.GetFloat(8));
-                    Assert.AreEqual(dataReaderMock.GetGuid(9), protoBufDataReader.GetGuid(9));
-                    Assert.AreEqual(dataReaderMock.GetInt32(10), protoBufDataReader.GetInt32(10));
-                    Assert.AreEqual(dataReaderMock.GetInt64(11), protoBufDataReader.GetInt64(11));
-                    Assert.AreEqual(dataReaderMock.GetInt16(12), protoBufDataReader.GetInt16(12));
-                    Assert.AreEqual(dataReaderMock.GetString(13), protoBufDataReader.GetString(13));
-                    Assert.AreEqual((TimeSpan)dataReaderMock[14], (TimeSpan)protoBufDataReader[14]);
+                    Assert.Equal(dataReaderMock.GetBoolean(0), protoBufDataReader.GetBoolean(0));
+                    Assert.Equal(dataReaderMock.GetByte(1), protoBufDataReader.GetByte(1));
+                    //Assert.Equal(dataReaderMock.GetBytes(2), dataReader.GetBytes(2));
+                    Assert.Equal(dataReaderMock.GetChar(3), protoBufDataReader.GetChar(3));
+                    //Assert.Equal(dataReaderMock.GetChars(4), dataReader.GetChars(4));
+                    Assert.Equal(dataReaderMock.GetDateTime(5), protoBufDataReader.GetDateTime(5));
+                    Assert.Equal(dataReaderMock.GetDecimal(6), protoBufDataReader.GetDecimal(6));
+                    Assert.Equal(dataReaderMock.GetDouble(7), protoBufDataReader.GetDouble(7));
+                    Assert.Equal(dataReaderMock.GetFloat(8), protoBufDataReader.GetFloat(8));
+                    Assert.Equal(dataReaderMock.GetGuid(9), protoBufDataReader.GetGuid(9));
+                    Assert.Equal(dataReaderMock.GetInt32(10), protoBufDataReader.GetInt32(10));
+                    Assert.Equal(dataReaderMock.GetInt64(11), protoBufDataReader.GetInt64(11));
+                    Assert.Equal(dataReaderMock.GetInt16(12), protoBufDataReader.GetInt16(12));
+                    Assert.Equal(dataReaderMock.GetString(13), protoBufDataReader.GetString(13));
+                    Assert.Equal((TimeSpan)dataReaderMock[14], (TimeSpan)protoBufDataReader[14]);
                 }
             }
         }

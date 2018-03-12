@@ -1,22 +1,20 @@
 ﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
 // Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace ProtoBuf.Data.Light.Test
 {
-    [TestClass]
     public class ProtoBufDataReaderTests
     {
         private IDataReader protoBufDataReader;
-
-        [TestInitialize]
-        public void TestInitialize()
+        
+        public ProtoBufDataReaderTests()
         {
             var dataReaderMock = new DataReaderMock(false);
             var memoryStream = new MemoryStream();
@@ -28,10 +26,9 @@ namespace ProtoBuf.Data.Light.Test
             this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
         }
 
-        [TestClass]
         public class TheDisposeMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(ObjectDisposedException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsDisposed()
             {
                 // Arrange
@@ -48,58 +45,56 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.Dispose();
 
                 // Assert
-                memoryStream.Position = 0;
+                Assert.Throws<ObjectDisposedException>(() => memoryStream.Position = 0);
             }
         }
 
-        [TestClass]
         public class TheNextResultMethod : ProtoBufDataReaderTests
         {
-            [TestMethod]
+            [Fact]
             public void ShouldNotCloseWhenNoMoreResults()
             {
                 // Act
                 protoBufDataReader.NextResult();
 
                 // Assert
-                Assert.IsFalse(protoBufDataReader.IsClosed);
+                Assert.False(protoBufDataReader.IsClosed);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnFalseWhenNooMoreResults()
             {
                 // Act
                 var result = protoBufDataReader.NextResult();
 
                 // Assert
-                Assert.IsFalse(result);
+                Assert.False(result);
             }
         }
 
-        [TestClass]
         public class TheGetFieldTypeMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetFieldType(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetFieldType(0));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetFieldType(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetFieldType(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingFieldType()
             {
                 // Arrange
@@ -109,39 +104,38 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.FieldCount, protoBufDataReader.FieldCount);
+                Assert.Equal(dataReaderMock.FieldCount, protoBufDataReader.FieldCount);
 
                 for (int i = 0; i < protoBufDataReader.FieldCount; i++)
                 {
-                    Assert.AreEqual(dataReaderMock.GetFieldType(i), protoBufDataReader.GetFieldType(i));
+                    Assert.Equal(dataReaderMock.GetFieldType(i), protoBufDataReader.GetFieldType(i));
                 }
             }
         }
 
-        [TestClass]
         public class TheGetNameMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetName(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetName(0));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetName(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetName(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingName()
             {
                 // Arrange
@@ -151,29 +145,28 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.FieldCount, protoBufDataReader.FieldCount);
+                Assert.Equal(dataReaderMock.FieldCount, protoBufDataReader.FieldCount);
 
                 for (int i = 0; i < protoBufDataReader.FieldCount; i++)
                 {
-                    Assert.AreEqual(dataReaderMock.GetName(i), protoBufDataReader.GetName(i));
+                    Assert.Equal(dataReaderMock.GetName(i), protoBufDataReader.GetName(i));
                 }
             }
         }
 
-        [TestClass]
         public class TheGetDataTypeNameMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetDataTypeName(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetDataTypeName(0));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingDataTypeName()
             {
                 // Arrange
@@ -183,36 +176,35 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.FieldCount, protoBufDataReader.FieldCount);
+                Assert.Equal(dataReaderMock.FieldCount, protoBufDataReader.FieldCount);
 
                 for (int i = 0; i < protoBufDataReader.FieldCount; i++)
                 {
-                    Assert.AreEqual(dataReaderMock.GetDataTypeName(i), protoBufDataReader.GetDataTypeName(i));
+                    Assert.Equal(dataReaderMock.GetDataTypeName(i), protoBufDataReader.GetDataTypeName(i));
                 }
             }
         }
 
-        [TestClass]
         public class TheGetOrdinalMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetOrdinal("bool");
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetOrdinal("bool"));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
-                // Act
-                protoBufDataReader.GetOrdinal("nonexistent");
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetOrdinal("nonexistent"));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingOrdinal()
             {
                 // Arrange
@@ -222,42 +214,41 @@ namespace ProtoBuf.Data.Light.Test
                 // Assert
                 for (int i = 0; i < schemaTableMock.Rows.Count; i++)
                 {
-                    Assert.AreEqual(dataReaderMock.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()), protoBufDataReader.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()));
+                    Assert.Equal(dataReaderMock.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()), protoBufDataReader.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()));
                 }
             }
         }
 
-        [TestClass]
         public class TheGetValueMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetValue(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetValue(0));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetValue(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetValue(0));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetValue(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetValue(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -270,26 +261,25 @@ namespace ProtoBuf.Data.Light.Test
 
                     for (int i = 0; i < protoBufDataReader.FieldCount; i++)
                     {
-                        Assert.AreEqual(Convert.ToString(dataReaderMock.GetValue(i)), Convert.ToString(protoBufDataReader.GetValue(i)));
+                        Assert.Equal(Convert.ToString(dataReaderMock.GetValue(i)), Convert.ToString(protoBufDataReader.GetValue(i)));
                     }
                 }
             }
         }
 
-        [TestClass]
         public class TheGetSchemaTableMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetSchemaTable();
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetSchemaTable());
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnSchemaTable()
             {
                 // Arrange
@@ -299,49 +289,48 @@ namespace ProtoBuf.Data.Light.Test
                 var schemaTable = protoBufDataReader.GetSchemaTable();
 
                 // Assert
-                Assert.IsNotNull(schemaTable);
-                Assert.AreEqual(schemaTableMock.Rows.Count, schemaTable.Rows.Count);
+                Assert.NotNull(schemaTable);
+                Assert.Equal(schemaTableMock.Rows.Count, schemaTable.Rows.Count);
 
                 for (int i = 0; i < schemaTable.Rows.Count; i++)
                 {
-                    Assert.AreEqual(schemaTableMock.Rows[i]["ColumnName"].ToString(), schemaTable.Rows[i]["ColumnName"].ToString());
-                    Assert.AreEqual((int)schemaTableMock.Rows[i]["ColumnOrdinal"], (int)schemaTable.Rows[i]["ColumnOrdinal"]);
-                    Assert.AreEqual(schemaTableMock.Rows[i]["DataTypeName"].ToString(), schemaTable.Rows[i]["DataTypeName"].ToString());
+                    Assert.Equal(schemaTableMock.Rows[i]["ColumnName"].ToString(), schemaTable.Rows[i]["ColumnName"].ToString());
+                    Assert.Equal((int)schemaTableMock.Rows[i]["ColumnOrdinal"], (int)schemaTable.Rows[i]["ColumnOrdinal"]);
+                    Assert.Equal(schemaTableMock.Rows[i]["DataTypeName"].ToString(), schemaTable.Rows[i]["DataTypeName"].ToString());
                 }
             }
         }
 
-        [TestClass]
         public class TheGetBooleanMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetBoolean(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetBoolean(0));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetBoolean(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetBoolean(0));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBoolean(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetBoolean(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -351,41 +340,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetBoolean(0), protoBufDataReader.GetBoolean(0));
+                Assert.Equal(dataReaderMock.GetBoolean(0), protoBufDataReader.GetBoolean(0));
             }
         }
 
-        [TestClass]
         public class TheIsDBNullMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.IsDBNull(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.IsDBNull(0));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.IsDBNull(0);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.IsDBNull(0));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.IsDBNull(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.IsDBNull(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -397,42 +385,41 @@ namespace ProtoBuf.Data.Light.Test
                 // Assert
                 for (var i = 0; i < protoBufDataReader.FieldCount; i++)
                 {
-                    Assert.AreEqual(dataReaderMock.IsDBNull(i), protoBufDataReader.IsDBNull(i));
+                    Assert.Equal(dataReaderMock.IsDBNull(i), protoBufDataReader.IsDBNull(i));
                 }
             }
         }
 
-        [TestClass]
         public class TheGetByteMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetByte(1);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetByte(1));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetByte(1);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetByte(1));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetByte(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetByte(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -442,91 +429,90 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetByte(1), protoBufDataReader.GetByte(1));
+                Assert.Equal(dataReaderMock.GetByte(1), protoBufDataReader.GetByte(1));
             }
         }
 
-        [TestClass]
         public class TheGetBytesMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetBytes(2, 0, new byte[0], 0, 1);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetBytes(2, 0, new byte[0], 0, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetBytes(2, 0, new byte[9], 0, 9);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetBytes(2, 0, new byte[9], 0, 9));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBytes(protoBufDataReader.FieldCount, 0, new byte[0], 0, 1);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetBytes(protoBufDataReader.FieldCount, 0, new byte[0], 0, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBytes(2, -1, new byte[9], 0, 1);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetBytes(2, -1, new byte[9], 0, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenLengthIsLessThanZero()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBytes(2, 0, new byte[9], 0, -1);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetBytes(2, 0, new byte[9], 0, -1));
             }
 
-            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsLessThanZero()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBytes(2, 0, new byte[9], -1, 1);
+                // Assert
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetBytes(2, 0, new byte[9], -1, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsGreaterThanBufferSize()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBytes(2, 0, new byte[9], 10, 1);
+                // Assert
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetBytes(2, 0, new byte[9], 10, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsEqualToBufferSize()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBytes(2, 0, new byte[9], 9, 1);
+                // Assert
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetBytes(2, 0, new byte[9], 9, 1));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnByteArrayLenthWhenBufferIsNull()
             {
                 // Arrange
@@ -536,17 +522,17 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetBytes(2, 0, null, 0, 9);
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenByteArrayLengthAndBufferOffsetIsGreaterThanBufferLength()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetBytes(2, 0, new byte[9], 1, 0);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetBytes(2, 0, new byte[9], 1, 0));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnZeroWhenFieldOffsetIsGreaterThanByteArrayLength()
             {
                 // Arrange
@@ -556,7 +542,7 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetBytes(2, 9, new byte[9], 0, 9);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldAdjustCopyLengthWhenFieldOffsetAndLengthExceedsByteArrayLength()
             {
                 // Arrange
@@ -566,7 +552,7 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetBytes(2, 1, new byte[9], 0, 9);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -583,41 +569,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.GetBytes(2, 0, bufferMock, 0, 9);
                 protoBufDataReader.GetBytes(2, 0, buffer, 0, 9);
 
-                Assert.AreEqual(Encoding.UTF8.GetString(bufferMock), Encoding.UTF8.GetString(buffer));
+                Assert.Equal(Encoding.UTF8.GetString(bufferMock), Encoding.UTF8.GetString(buffer));
             }
         }
 
-        [TestClass]
         public class TheGetCharMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetChar(3);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChar(3));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetChar(3);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChar(3));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChar(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetChar(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -627,91 +612,90 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetChar(3), protoBufDataReader.GetChar(3));
+                Assert.Equal(dataReaderMock.GetChar(3), protoBufDataReader.GetChar(3));
             }
         }
 
-        [TestClass]
         public class TheGetCharsMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetChars(4, 0, new char[0], 0, 1);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChars(4, 0, new char[0], 0, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetChars(4, 0, new char[9], 0, 9);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChars(4, 0, new char[9], 0, 9));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChars(protoBufDataReader.FieldCount, 0, new char[0], 0, 1);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetChars(protoBufDataReader.FieldCount, 0, new char[0], 0, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChars(4, -1, new char[9], 0, 1);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChars(4, -1, new char[9], 0, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenLengthIsLessThanZero()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChars(4, 0, new char[9], 0, -1);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetChars(4, 0, new char[9], 0, -1));
             }
 
-            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsLessThanZero()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChars(4, 0, new char[9], -1, 1);
+                // Assert
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetChars(4, 0, new char[9], -1, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsGreaterThanBufferSize()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChars(4, 0, new char[9], 10, 1);
+                // Assert
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetChars(4, 0, new char[9], 10, 1));
             }
 
-            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsEqualToBufferSize()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChars(4, 0, new char[9], 9, 1);
+                // Assert
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetChars(4, 0, new char[9], 9, 1));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnByteArrayLenthWhenBufferIsNull()
             {
                 // Arrange
@@ -721,17 +705,17 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetChars(4, 0, null, 0, 9);
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenByteArrayLengthAndBufferOffsetIsGreaterThanBufferLength()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetChars(4, 0, new char[9], 1, 0);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetChars(4, 0, new char[9], 1, 0));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnZeroWhenFieldOffsetIsGreaterThanByteArrayLength()
             {
                 // Arrange
@@ -741,7 +725,7 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetChars(4, 9, new char[9], 0, 9);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldAdjustCopyLengthWhenFieldOffsetAndLengthExceedsByteArrayLength()
             {
                 // Arrange
@@ -751,7 +735,7 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetChars(4, 1, new char[9], 0, 9);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -768,41 +752,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.GetChars(4, 0, bufferMock, 0, 9);
                 protoBufDataReader.GetChars(4, 0, buffer, 0, 9);
 
-                Assert.AreEqual(new string(bufferMock), new string(buffer));
+                Assert.Equal(new string(bufferMock), new string(buffer));
             }
         }
 
-        [TestClass]
         public class TheGetDateTimeMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetDateTime(5);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetDateTime(5));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetDateTime(5);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetDateTime(5));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetDateTime(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetDateTime(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -812,41 +795,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetDateTime(5), protoBufDataReader.GetDateTime(5));
+                Assert.Equal(dataReaderMock.GetDateTime(5), protoBufDataReader.GetDateTime(5));
             }
         }
 
-        [TestClass]
         public class TheGetDecimalMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetDecimal(6);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetDecimal(6));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetDecimal(6);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetDecimal(6));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetDecimal(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetDecimal(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -856,41 +838,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetDecimal(6), protoBufDataReader.GetDecimal(6));
+                Assert.Equal(dataReaderMock.GetDecimal(6), protoBufDataReader.GetDecimal(6));
             }
         }
 
-        [TestClass]
         public class TheGetDoubleMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetDouble(7);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetDouble(7));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetDouble(7);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetDouble(7));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetDouble(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetDouble(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -900,41 +881,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetDouble(7), protoBufDataReader.GetDouble(7));
+                Assert.Equal(dataReaderMock.GetDouble(7), protoBufDataReader.GetDouble(7));
             }
         }
 
-        [TestClass]
         public class TheGetFloatMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetFloat(8);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetFloat(8));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetFloat(8);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetFloat(8));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetFloat(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetFloat(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -944,41 +924,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetFloat(8), protoBufDataReader.GetFloat(8));
+                Assert.Equal(dataReaderMock.GetFloat(8), protoBufDataReader.GetFloat(8));
             }
         }
 
-        [TestClass]
         public class TheGetGuidMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetGuid(9);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetGuid(9));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetGuid(9);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetGuid(9));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetGuid(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetGuid(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -988,41 +967,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetGuid(9), protoBufDataReader.GetGuid(9));
+                Assert.Equal(dataReaderMock.GetGuid(9), protoBufDataReader.GetGuid(9));
             }
         }
 
-        [TestClass]
         public class TheGetInt32Method : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetInt32(10);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetInt32(10));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetInt32(10);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetInt32(10));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetInt32(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetInt32(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -1032,41 +1010,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetInt32(10), protoBufDataReader.GetInt32(10));
+                Assert.Equal(dataReaderMock.GetInt32(10), protoBufDataReader.GetInt32(10));
             }
         }
 
-        [TestClass]
         public class TheGetInt64Method : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetInt64(11);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetInt64(11));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetInt64(11);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetInt64(11));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetInt64(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetInt64(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -1076,41 +1053,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetInt64(11), protoBufDataReader.GetInt64(11));
+                Assert.Equal(dataReaderMock.GetInt64(11), protoBufDataReader.GetInt64(11));
             }
         }
 
-        [TestClass]
         public class TheGetInt16Method : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetInt16(12);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetInt16(12));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetInt16(12);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetInt16(12));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetInt16(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetInt16(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -1120,41 +1096,40 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetInt16(12), protoBufDataReader.GetInt16(12));
+                Assert.Equal(dataReaderMock.GetInt16(12), protoBufDataReader.GetInt16(12));
             }
         }
 
-        [TestClass]
         public class TheGetStringMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetString(13);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetString(13));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
-                // Act
-                protoBufDataReader.GetString(13);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetString(13));
             }
 
-            [TestMethod, ExpectedException(typeof(IndexOutOfRangeException))]
+            [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
                 protoBufDataReader.Read();
 
-                // Act
-                protoBufDataReader.GetString(protoBufDataReader.FieldCount);
+                // Assert
+                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetString(protoBufDataReader.FieldCount));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
@@ -1164,31 +1139,30 @@ namespace ProtoBuf.Data.Light.Test
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.GetString(13), protoBufDataReader.GetString(13));
+                Assert.Equal(dataReaderMock.GetString(13), protoBufDataReader.GetString(13));
             }
         }
 
-        [TestClass]
         public class TheGetValuesMethod : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+            [Fact]
             public void ShouldThrowExceptionWhenValuesIsNull()
             {
-                // Act
-                protoBufDataReader.GetValues(null);
+                // Assert
+                Assert.Throws<ArgumentNullException>("values", () => protoBufDataReader.GetValues(null));
             }
 
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                protoBufDataReader.GetString(13);
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetString(13));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValues()
             {
                 // Arrange
@@ -1204,10 +1178,10 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetValues(values);
 
                 // Assert
-                Assert.AreEqual(string.Join("", valuesMock), string.Join("", values));
+                Assert.Equal(string.Join("", valuesMock), string.Join("", values));
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValuesWithSmallerArray()
             {
                 // Arrange
@@ -1223,31 +1197,30 @@ namespace ProtoBuf.Data.Light.Test
                 protoBufDataReader.GetValues(values);
 
                 // Assert
-                Assert.AreEqual(string.Join("", valuesMock), string.Join("", values));
+                Assert.Equal(string.Join("", valuesMock), string.Join("", values));
             }
         }
 
-        [TestClass]
         public class TheRecordsAffectedProperty : ProtoBufDataReaderTests
         {
-            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
                 protoBufDataReader.Close();
 
-                // Act
-                var recordsAffected = protoBufDataReader.RecordsAffected;
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.RecordsAffected);
             }
 
-            [TestMethod]
+            [Fact]
             public void ShouldReturnCorrespondingValues()
             {
                 // Arrange
                 var dataReaderMock = new DataReaderMock(false);
 
                 // Assert
-                Assert.AreEqual(dataReaderMock.RecordsAffected, protoBufDataReader.RecordsAffected);
+                Assert.Equal(dataReaderMock.RecordsAffected, protoBufDataReader.RecordsAffected);
             }
         }
     }
