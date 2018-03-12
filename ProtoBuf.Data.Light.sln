@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Test", "test\ProtoBuf.Data.Light.Test\ProtoBuf.Data.Light.Test.csproj", "{744FAE49-E8E2-45F4-A9AD-642BF119AEB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Tests", "test\ProtoBuf.Data.Light.Tests\ProtoBuf.Data.Light.Tests.csproj", "{744FAE49-E8E2-45F4-A9AD-642BF119AEB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light", "src\ProtoBuf.Data.Light\ProtoBuf.Data.Light.csproj", "{EC6D4949-468F-4991-BD40-50667F01FC8D}"
 EndProject

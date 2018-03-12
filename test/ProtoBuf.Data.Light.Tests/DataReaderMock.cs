@@ -8,7 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace ProtoBuf.Data.Light.Test
+namespace ProtoBuf.Data.Light.Tests
 {
     public class DataReaderMock : IDataReader
     {

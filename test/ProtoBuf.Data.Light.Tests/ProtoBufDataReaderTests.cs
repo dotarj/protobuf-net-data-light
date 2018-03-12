@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace ProtoBuf.Data.Light.Test
+namespace ProtoBuf.Data.Light.Tests
 {
     public class ProtoBufDataReaderTests
     {

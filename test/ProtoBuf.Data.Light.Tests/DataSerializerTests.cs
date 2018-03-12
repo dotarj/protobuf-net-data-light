@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 using System.IO;
 using Xunit;
 
-namespace ProtoBuf.Data.Light.Test
+namespace ProtoBuf.Data.Light.Tests
 {
     public class DataSerializerTests
     {
