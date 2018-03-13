@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using Xunit;
@@ -14,27 +13,27 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                protoBufDataReader.Close();
+                this.protoBufDataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetGuid(9));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetGuid(9));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetGuid(9));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetGuid(9));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetGuid(protoBufDataReader.FieldCount));
+                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetGuid(this.protoBufDataReader.FieldCount));
             }
 
             [Fact]
@@ -43,11 +42,11 @@ namespace ProtoBuf.Data.Light.Tests
                 // Arrange
                 var dataReaderMock = new DataReaderMock(false);
 
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
                 dataReaderMock.Read();
 
                 // Assert
-                Assert.Equal(dataReaderMock.GetGuid(9), protoBufDataReader.GetGuid(9));
+                Assert.Equal(dataReaderMock.GetGuid(9), this.protoBufDataReader.GetGuid(9));
             }
         }
     }

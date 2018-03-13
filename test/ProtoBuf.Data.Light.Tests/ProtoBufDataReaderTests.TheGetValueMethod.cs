@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using Xunit;
@@ -14,27 +13,27 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                protoBufDataReader.Close();
+                this.protoBufDataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetValue(0));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetValue(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetValue(0));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetValue(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetValue(protoBufDataReader.FieldCount));
+                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetValue(this.protoBufDataReader.FieldCount));
             }
 
             [Fact]
@@ -44,13 +43,13 @@ namespace ProtoBuf.Data.Light.Tests
                 var dataReaderMock = new DataReaderMock(false);
 
                 // Assert
-                while (protoBufDataReader.Read())
+                while (this.protoBufDataReader.Read())
                 {
                     dataReaderMock.Read();
 
-                    for (int i = 0; i < protoBufDataReader.FieldCount; i++)
+                    for (int i = 0; i < this.protoBufDataReader.FieldCount; i++)
                     {
-                        Assert.Equal(Convert.ToString(dataReaderMock.GetValue(i)), Convert.ToString(protoBufDataReader.GetValue(i)));
+                        Assert.Equal(Convert.ToString(dataReaderMock.GetValue(i)), Convert.ToString(this.protoBufDataReader.GetValue(i)));
                     }
                 }
             }

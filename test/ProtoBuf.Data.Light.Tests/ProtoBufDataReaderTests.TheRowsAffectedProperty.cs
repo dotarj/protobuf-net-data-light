@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using Xunit;
@@ -14,10 +13,10 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                protoBufDataReader.Close();
+                this.protoBufDataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.RecordsAffected);
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.RecordsAffected);
             }
 
             [Fact]
@@ -27,7 +26,7 @@ namespace ProtoBuf.Data.Light.Tests
                 var dataReaderMock = new DataReaderMock(false);
 
                 // Assert
-                Assert.Equal(dataReaderMock.RecordsAffected, protoBufDataReader.RecordsAffected);
+                Assert.Equal(dataReaderMock.RecordsAffected, this.protoBufDataReader.RecordsAffected);
             }
         }
     }

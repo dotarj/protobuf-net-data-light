@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using Xunit;
@@ -14,17 +13,17 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                protoBufDataReader.Close();
+                this.protoBufDataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetOrdinal("bool"));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetOrdinal("bool"));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetOrdinal("nonexistent"));
+                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetOrdinal("nonexistent"));
             }
 
             [Fact]
@@ -37,7 +36,7 @@ namespace ProtoBuf.Data.Light.Tests
                 // Assert
                 for (int i = 0; i < schemaTableMock.Rows.Count; i++)
                 {
-                    Assert.Equal(dataReaderMock.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()), protoBufDataReader.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()));
+                    Assert.Equal(dataReaderMock.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()), this.protoBufDataReader.GetOrdinal(schemaTableMock.Rows[i]["ColumnName"].ToString()));
                 }
             }
         }

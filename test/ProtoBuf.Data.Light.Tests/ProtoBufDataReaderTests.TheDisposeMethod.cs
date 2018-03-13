@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using System.IO;
@@ -25,7 +24,7 @@ namespace ProtoBuf.Data.Light.Tests
                 this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
 
                 // Act
-                protoBufDataReader.Dispose();
+                this.protoBufDataReader.Dispose();
 
                 // Assert
                 Assert.Throws<ObjectDisposedException>(() => memoryStream.Position = 0);

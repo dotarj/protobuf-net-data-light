@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using Xunit;
@@ -14,17 +13,17 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenValuesIsNull()
             {
                 // Assert
-                Assert.Throws<ArgumentNullException>("values", () => protoBufDataReader.GetValues(null));
+                Assert.Throws<ArgumentNullException>("values", () => this.protoBufDataReader.GetValues(null));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                protoBufDataReader.Close();
+                this.protoBufDataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetString(13));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetString(13));
             }
 
             [Fact]
@@ -34,16 +33,16 @@ namespace ProtoBuf.Data.Light.Tests
                 var dataReaderMock = new DataReaderMock(false);
 
                 dataReaderMock.Read();
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 var valuesMock = new object[dataReaderMock.FieldCount];
-                var values = new object[protoBufDataReader.FieldCount];
+                var values = new object[this.protoBufDataReader.FieldCount];
 
                 dataReaderMock.GetValues(valuesMock);
-                protoBufDataReader.GetValues(values);
+                this.protoBufDataReader.GetValues(values);
 
                 // Assert
-                Assert.Equal(string.Join("", valuesMock), string.Join("", values));
+                Assert.Equal(string.Join(string.Empty, valuesMock), string.Join(string.Empty, values));
             }
 
             [Fact]
@@ -53,16 +52,16 @@ namespace ProtoBuf.Data.Light.Tests
                 var dataReaderMock = new DataReaderMock(false);
 
                 dataReaderMock.Read();
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 var valuesMock = new object[1];
                 var values = new object[1];
 
                 dataReaderMock.GetValues(valuesMock);
-                protoBufDataReader.GetValues(values);
+                this.protoBufDataReader.GetValues(values);
 
                 // Assert
-                Assert.Equal(string.Join("", valuesMock), string.Join("", values));
+                Assert.Equal(string.Join(string.Empty, valuesMock), string.Join(string.Empty, values));
             }
         }
     }

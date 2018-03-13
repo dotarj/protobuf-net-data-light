@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using Xunit;
@@ -14,117 +13,117 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                protoBufDataReader.Close();
+                this.protoBufDataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChars(4, 0, new char[0], 0, 1));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetChars(4, 0, new char[0], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChars(4, 0, new char[9], 0, 9));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetChars(4, 0, new char[9], 0, 9));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetChars(protoBufDataReader.FieldCount, 0, new char[0], 0, 1));
+                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetChars(this.protoBufDataReader.FieldCount, 0, new char[0], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => protoBufDataReader.GetChars(4, -1, new char[9], 0, 1));
+                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetChars(4, -1, new char[9], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenLengthIsLessThanZero()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetChars(4, 0, new char[9], 0, -1));
+                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetChars(4, 0, new char[9], 0, -1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsLessThanZero()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetChars(4, 0, new char[9], -1, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetChars(4, 0, new char[9], -1, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsGreaterThanBufferSize()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetChars(4, 0, new char[9], 10, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetChars(4, 0, new char[9], 10, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsEqualToBufferSize()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => protoBufDataReader.GetChars(4, 0, new char[9], 9, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetChars(4, 0, new char[9], 9, 1));
             }
 
             [Fact]
             public void ShouldReturnByteArrayLenthWhenBufferIsNull()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Act
-                protoBufDataReader.GetChars(4, 0, null, 0, 9);
+                this.protoBufDataReader.GetChars(4, 0, null, 0, 9);
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenByteArrayLengthAndBufferOffsetIsGreaterThanBufferLength()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => protoBufDataReader.GetChars(4, 0, new char[9], 1, 0));
+                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetChars(4, 0, new char[9], 1, 0));
             }
 
             [Fact]
             public void ShouldReturnZeroWhenFieldOffsetIsGreaterThanByteArrayLength()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Act
-                protoBufDataReader.GetChars(4, 9, new char[9], 0, 9);
+                this.protoBufDataReader.GetChars(4, 9, new char[9], 0, 9);
             }
 
             [Fact]
             public void ShouldAdjustCopyLengthWhenFieldOffsetAndLengthExceedsByteArrayLength()
             {
                 // Arrange
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
 
                 // Act
-                protoBufDataReader.GetChars(4, 1, new char[9], 0, 9);
+                this.protoBufDataReader.GetChars(4, 1, new char[9], 0, 9);
             }
 
             [Fact]
@@ -133,16 +132,15 @@ namespace ProtoBuf.Data.Light.Tests
                 // Arrange
                 var dataReaderMock = new DataReaderMock(false);
 
-                protoBufDataReader.Read();
+                this.protoBufDataReader.Read();
                 dataReaderMock.Read();
 
                 var bufferMock = new char[9];
                 var buffer = new char[9];
-                //9
 
                 // Assert
                 dataReaderMock.GetChars(4, 0, bufferMock, 0, 9);
-                protoBufDataReader.GetChars(4, 0, buffer, 0, 9);
+                this.protoBufDataReader.GetChars(4, 0, buffer, 0, 9);
 
                 Assert.Equal(new string(bufferMock), new string(buffer));
             }
