@@ -2,19 +2,19 @@
 <2 Variant> Records affected
 <3 StartGroup> Result
 <SubItem>
-    <1 StartGroup> Columns
+  <1 StartGroup> Columns
   <SubItem>
     <1 StartGroup> Column
     <SubItem>
       <1 String> Column name
       <2 Variant> Column type
     </SubItem>
-    </SubItem>
-    <2 StartGroup> Records
+  </SubItem>
+  <2 StartGroup> Records
   <SubItem>
     <1 StartGroup> Record
     <SubItem>
       <(# Column index) (corresponding type)> Field value
     </SubItem>
-    </SubItem>
+  </SubItem>
 </SubItem>

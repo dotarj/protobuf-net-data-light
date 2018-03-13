@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ namespace ProtoBuf.Data.Light
 {
     internal static class TypeHelper
     {
-        private static readonly Type[] SupportedDataTypes = new []
+        private static readonly Type[] SupportedDataTypes = new[]
         {
             typeof(bool),
             typeof(byte),
@@ -24,7 +23,7 @@ namespace ProtoBuf.Data.Light
             typeof(int),
             typeof(long),
             typeof(short),
-            typeof(String),
+            typeof(string),
             typeof(TimeSpan)
         };
 

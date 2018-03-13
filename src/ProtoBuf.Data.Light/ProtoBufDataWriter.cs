@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -48,11 +47,11 @@ namespace ProtoBuf.Data.Light
         private static void WriteResult(IDataReader reader, int resultIndex, ProtoWriter protoWriter)
         {
             var columns = GetColumns(reader);
-            
+
             ProtoWriter.WriteFieldHeader(FieldHeaders.Result, WireType.StartGroup, protoWriter);
 
             var resultToken = ProtoWriter.StartSubItem(resultIndex, protoWriter);
-            
+
             WriteColumns(columns, protoWriter);
             WriteRecords(reader, columns, protoWriter);
 
@@ -67,13 +66,7 @@ namespace ProtoBuf.Data.Light
             {
                 var dataType = dataReader.GetFieldType(i);
 
-                columns.Add(new ProtoBufDataColumn
-                {
-                    Name = dataReader.GetName(i),
-                    Ordinal = i,
-                    DataType = dataType,
-                    ProtoBufDataType = TypeHelper.GetProtoBufDataType(dataType)
-                });
+                columns.Add(new ProtoBufDataColumn(name: dataReader.GetName(i), ordinal: i, dataType: dataType, protoBufDataType: TypeHelper.GetProtoBufDataType(dataType)));
             }
 
             return columns;

@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 using System.Runtime.InteropServices;
@@ -8,33 +7,13 @@ namespace ProtoBuf.Data.Light
 {
     internal sealed class ProtoBufDataBuffer
     {
-        [StructLayout(LayoutKind.Explicit)]
-        private struct ValueTypeBuffer
+        private ValueTypeBuffer valueTypeBuffer;
+        private BufferType bufferType;
+        private object referenceTypeBuffer;
+
+        internal ProtoBufDataBuffer()
         {
-            [FieldOffset(0)]
-            internal bool Bool;
-            [FieldOffset(0)]
-            internal byte Byte;
-            [FieldOffset(0)]
-            internal char Char;
-            [FieldOffset(0)]
-            internal DateTime DateTime;
-            [FieldOffset(0)]
-            internal decimal Decimal;
-            [FieldOffset(0)]
-            internal double Double;
-            [FieldOffset(0)]
-            internal float Float;
-            [FieldOffset(0)]
-            internal Guid Guid;
-            [FieldOffset(0)]
-            internal int Int;
-            [FieldOffset(0)]
-            internal long Long;
-            [FieldOffset(0)]
-            internal short Short;
-            [FieldOffset(0)]
-            internal TimeSpan TimeSpan;
+            this.IsNull = true;
         }
 
         private enum BufferType
@@ -57,15 +36,6 @@ namespace ProtoBuf.Data.Light
             TimeSpan = 15
         }
 
-        private ValueTypeBuffer valueTypeBuffer;
-        private BufferType bufferType;
-        private object referenceTypeBuffer;
-
-        internal ProtoBufDataBuffer()
-        {
-            this.IsNull = true;
-        }
-
         internal bool IsNull { get; set; }
 
         internal bool Bool
@@ -79,6 +49,7 @@ namespace ProtoBuf.Data.Light
 
                 return (bool)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Bool;
@@ -98,6 +69,7 @@ namespace ProtoBuf.Data.Light
 
                 return (byte)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Byte;
@@ -117,6 +89,7 @@ namespace ProtoBuf.Data.Light
 
                 return (byte[])this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.ByteArray;
@@ -136,6 +109,7 @@ namespace ProtoBuf.Data.Light
 
                 return (char)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Char;
@@ -155,6 +129,7 @@ namespace ProtoBuf.Data.Light
 
                 return (char[])this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.CharArray;
@@ -174,6 +149,7 @@ namespace ProtoBuf.Data.Light
 
                 return (DateTime)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.DateTime;
@@ -193,6 +169,7 @@ namespace ProtoBuf.Data.Light
 
                 return (decimal)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Decimal;
@@ -212,6 +189,7 @@ namespace ProtoBuf.Data.Light
 
                 return (double)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Double;
@@ -231,6 +209,7 @@ namespace ProtoBuf.Data.Light
 
                 return (float)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Float;
@@ -250,6 +229,7 @@ namespace ProtoBuf.Data.Light
 
                 return (Guid)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Guid;
@@ -269,6 +249,7 @@ namespace ProtoBuf.Data.Light
 
                 return (int)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Int;
@@ -288,6 +269,7 @@ namespace ProtoBuf.Data.Light
 
                 return (long)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Long;
@@ -307,6 +289,7 @@ namespace ProtoBuf.Data.Light
 
                 return (short)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.Short;
@@ -326,6 +309,7 @@ namespace ProtoBuf.Data.Light
 
                 return (string)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.String;
@@ -345,6 +329,7 @@ namespace ProtoBuf.Data.Light
 
                 return (TimeSpan)this.Value;
             }
+
             set
             {
                 this.bufferType = BufferType.TimeSpan;
@@ -407,6 +392,35 @@ namespace ProtoBuf.Data.Light
             this.referenceTypeBuffer = null;
             this.IsNull = true;
             this.bufferType = BufferType.Empty;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct ValueTypeBuffer
+        {
+            [FieldOffset(0)]
+            internal bool Bool;
+            [FieldOffset(0)]
+            internal byte Byte;
+            [FieldOffset(0)]
+            internal char Char;
+            [FieldOffset(0)]
+            internal DateTime DateTime;
+            [FieldOffset(0)]
+            internal decimal Decimal;
+            [FieldOffset(0)]
+            internal double Double;
+            [FieldOffset(0)]
+            internal float Float;
+            [FieldOffset(0)]
+            internal Guid Guid;
+            [FieldOffset(0)]
+            internal int Int;
+            [FieldOffset(0)]
+            internal long Long;
+            [FieldOffset(0)]
+            internal short Short;
+            [FieldOffset(0)]
+            internal TimeSpan TimeSpan;
         }
     }
 }

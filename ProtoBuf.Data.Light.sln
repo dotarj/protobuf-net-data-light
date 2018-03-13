@@ -6,6 +6,19 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Tests", "test\ProtoBuf.Data.Light.Tests\ProtoBuf.Data.Light.Tests.csproj", "{744FAE49-E8E2-45F4-A9AD-642BF119AEB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light", "src\ProtoBuf.Data.Light\ProtoBuf.Data.Light.csproj", "{EC6D4949-468F-4991-BD40-50667F01FC8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProtoBuf.Data.Light", "src\ProtoBuf.Data.Light\ProtoBuf.Data.Light.csproj", "{EC6D4949-468F-4991-BD40-50667F01FC8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DC8FC42F-8C76-4725-A67B-A8373E5F8035}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{2D40C8AB-A9AF-4BC2-8D87-44EDC673ADBD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30BCCDD3-EF9B-4BB5-A08F-46A0985B046B}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		NOTICE = NOTICE
+		stylecop.json = stylecop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

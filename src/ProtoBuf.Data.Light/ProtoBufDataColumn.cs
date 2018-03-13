@@ -1,5 +1,4 @@
-﻿// Copyright (c) Arjen Post. See License.txt in the project root for license information.
-// Credits go to Richard Dingwall (https://github.com/rdingwall) for the original idea of the IDataReader serializer.
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
 
@@ -7,12 +6,20 @@ namespace ProtoBuf.Data.Light
 {
     internal sealed class ProtoBufDataColumn
     {
-        internal string Name;
+        public ProtoBufDataColumn(string name, int ordinal, Type dataType, ProtoBufDataType protoBufDataType)
+        {
+            this.Name = name;
+            this.Ordinal = ordinal;
+            this.DataType = dataType;
+            this.ProtoBufDataType = protoBufDataType;
+        }
 
-        internal int Ordinal;
+        internal string Name { get; }
 
-        internal Type DataType;
+        internal int Ordinal { get; }
 
-        internal ProtoBufDataType ProtoBufDataType;
+        internal Type DataType { get; }
+
+        internal ProtoBufDataType ProtoBufDataType { get; }
     }
 }

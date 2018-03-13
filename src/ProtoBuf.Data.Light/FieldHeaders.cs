@@ -1,4 +1,6 @@
-﻿namespace ProtoBuf.Data.Light
+﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
+
+namespace ProtoBuf.Data.Light
 {
     internal static class FieldHeaders
     {
