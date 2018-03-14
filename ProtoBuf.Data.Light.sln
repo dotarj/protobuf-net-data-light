@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light.Tests", "test\ProtoBuf.Data.Light.Tests\ProtoBuf.Data.Light.Tests.csproj", "{744FAE49-E8E2-45F4-A9AD-642BF119AEB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProtoBuf.Data.Light.Tests", "test\ProtoBuf.Data.Light.Tests\ProtoBuf.Data.Light.Tests.csproj", "{744FAE49-E8E2-45F4-A9AD-642BF119AEB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtoBuf.Data.Light", "src\ProtoBuf.Data.Light\ProtoBuf.Data.Light.csproj", "{EC6D4949-468F-4991-BD40-50667F01FC8D}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProtoBuf.Data.Light", "src\ProtoBuf.Data.Light\ProtoBuf.Data.Light.csproj", "{EC6D4949-468F-4991-BD40-50667F01FC8D}"
@@ -37,6 +37,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{744FAE49-E8E2-45F4-A9AD-642BF119AEB9} = {2D40C8AB-A9AF-4BC2-8D87-44EDC673ADBD}
+		{EC6D4949-468F-4991-BD40-50667F01FC8D} = {DC8FC42F-8C76-4725-A67B-A8373E5F8035}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0355535-4CC0-430B-B279-E07FF21D5085}
