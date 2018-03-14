@@ -6,7 +6,7 @@ namespace ProtoBuf.Data.Light
 {
     internal static class Throw
     {
-        internal static void IfNull<T>(T value, string parameterName)
+        public static void IfNull<T>(T value, string parameterName)
         {
             if (value == null)
             {

@@ -9,7 +9,7 @@ namespace ProtoBuf.Data.Light
 {
     internal static class ProtoBufDataWriter
     {
-        internal static void WriteReader(Stream stream, IDataReader reader)
+        public static void WriteReader(Stream stream, IDataReader reader)
         {
             using (var protoWriter = new ProtoWriter(stream, null, null))
             {

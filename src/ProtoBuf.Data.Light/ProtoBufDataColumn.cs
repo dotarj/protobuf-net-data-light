@@ -14,12 +14,12 @@ namespace ProtoBuf.Data.Light
             this.ProtoBufDataType = protoBufDataType;
         }
 
-        internal string Name { get; }
+        public string Name { get; }
 
-        internal int Ordinal { get; }
+        public int Ordinal { get; }
 
-        internal Type DataType { get; }
+        public Type DataType { get; }
 
-        internal ProtoBufDataType ProtoBufDataType { get; }
+        public ProtoBufDataType ProtoBufDataType { get; }
     }
 }

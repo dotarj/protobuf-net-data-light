@@ -19,8 +19,8 @@ namespace ProtoBuf.Data.Light
         /// <exception cref="System.NotSupportedException">A data type is not supperted.</exception>
         public static void Serialize(Stream stream, IDataReader reader)
         {
-            Throw.IfNull(stream, "stream");
-            Throw.IfNull(reader, "reader");
+            Throw.IfNull(stream, nameof(stream));
+            Throw.IfNull(reader, nameof(reader));
 
             ProtoBufDataWriter.WriteReader(stream, reader);
         }
@@ -33,7 +33,7 @@ namespace ProtoBuf.Data.Light
         /// <exception cref="InvalidDataException">The stream has an unexpected format.</exception>
         public static IDataReader Deserialize(Stream stream)
         {
-            Throw.IfNull(stream, "stream");
+            Throw.IfNull(stream, nameof(stream));
 
             return new ProtoBufDataReader(stream);
         }

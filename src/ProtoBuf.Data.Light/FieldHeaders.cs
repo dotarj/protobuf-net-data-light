@@ -4,15 +4,15 @@ namespace ProtoBuf.Data.Light
 {
     internal static class FieldHeaders
     {
-        internal const int None = 0;
-        internal const int Version = 1;
-        internal const int RecordsAffected = 2;
-        internal const int Result = 3;
-        internal const int Columns = 1;
-        internal const int Column = 1;
-        internal const int ColumnName = 1;
-        internal const int ColumnType = 2;
-        internal const int Records = 1;
-        internal const int Record = 1;
+        public const int None = 0;
+        public const int Version = 1;
+        public const int RecordsAffected = 2;
+        public const int Result = 3;
+        public const int Columns = 1;
+        public const int Column = 1;
+        public const int ColumnName = 1;
+        public const int ColumnType = 2;
+        public const int Records = 1;
+        public const int Record = 1;
     }
 }

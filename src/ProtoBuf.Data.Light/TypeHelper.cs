@@ -67,7 +67,7 @@ namespace ProtoBuf.Data.Light
 
         private static string supportedDataTypes;
 
-        internal static ProtoBufDataType GetProtoBufDataType(Type type)
+        public static ProtoBufDataType GetProtoBufDataType(Type type)
         {
             ProtoBufDataType value;
 
@@ -76,10 +76,10 @@ namespace ProtoBuf.Data.Light
                 return value;
             }
 
-            throw new NotSupportedException(string.Format("The data type '{0}' is not supported. The supported data types are: {1}.", type.Name, supportedDataTypes));
+            throw new NotSupportedException($"The data type '{type.Name}' is not supported. The supported data types are: {GetSupportedDataTypes()}.");
         }
 
-        internal static Type GetType(ProtoBufDataType type)
+        public static Type GetType(ProtoBufDataType type)
         {
             Type value;
 
@@ -88,24 +88,19 @@ namespace ProtoBuf.Data.Light
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Undefined ProtoBufDataType '{0}'.", (int)type));
+            throw new InvalidDataException($"Undefined ProtoBufDataType '{(int)type}'.");
         }
 
         private static string GetSupportedDataTypes()
         {
-            if (supportedDataTypes == null)
+            var dataTypeNames = new string[TypeHelper.SupportedDataTypes.Length];
+
+            for (var i = 0; i < TypeHelper.SupportedDataTypes.Length; i++)
             {
-                var dataTypeNames = new string[TypeHelper.SupportedDataTypes.Length];
-
-                for (var i = 0; i < TypeHelper.SupportedDataTypes.Length; i++)
-                {
-                    dataTypeNames[i] = TypeHelper.SupportedDataTypes[i].Name;
-                }
-
-                supportedDataTypes = string.Join(", ", dataTypeNames);
+                dataTypeNames[i] = TypeHelper.SupportedDataTypes[i].Name;
             }
 
-            return supportedDataTypes;
+            return supportedDataTypes = string.Join(", ", dataTypeNames);
         }
     }
 }

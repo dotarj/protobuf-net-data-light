@@ -11,7 +11,7 @@ namespace ProtoBuf.Data.Light
         private BufferType bufferType;
         private object referenceTypeBuffer;
 
-        internal ProtoBufDataBuffer()
+        public ProtoBufDataBuffer()
         {
             this.IsNull = true;
         }
@@ -36,9 +36,9 @@ namespace ProtoBuf.Data.Light
             TimeSpan = 15
         }
 
-        internal bool IsNull { get; set; }
+        public bool IsNull { get; set; }
 
-        internal bool Bool
+        public bool Bool
         {
             get
             {
@@ -58,7 +58,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal byte Byte
+        public byte Byte
         {
             get
             {
@@ -78,7 +78,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal byte[] ByteArray
+        public byte[] ByteArray
         {
             get
             {
@@ -98,7 +98,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal char Char
+        public char Char
         {
             get
             {
@@ -118,7 +118,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal char[] CharArray
+        public char[] CharArray
         {
             get
             {
@@ -138,7 +138,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal DateTime DateTime
+        public DateTime DateTime
         {
             get
             {
@@ -158,7 +158,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal decimal Decimal
+        public decimal Decimal
         {
             get
             {
@@ -178,7 +178,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal double Double
+        public double Double
         {
             get
             {
@@ -198,7 +198,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal float Float
+        public float Float
         {
             get
             {
@@ -218,7 +218,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal Guid Guid
+        public Guid Guid
         {
             get
             {
@@ -238,7 +238,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal int Int
+        public int Int
         {
             get
             {
@@ -258,7 +258,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal long Long
+        public long Long
         {
             get
             {
@@ -278,7 +278,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal short Short
+        public short Short
         {
             get
             {
@@ -298,7 +298,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal string String
+        public string String
         {
             get
             {
@@ -318,7 +318,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal TimeSpan TimeSpan
+        public TimeSpan TimeSpan
         {
             get
             {
@@ -338,7 +338,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal object Value
+        public object Value
         {
             get
             {
@@ -371,7 +371,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal static void Clear(ProtoBufDataBuffer[] buffers)
+        public static void Clear(ProtoBufDataBuffer[] buffers)
         {
             for (var i = 0; i < buffers.Length; i++)
             {
@@ -379,7 +379,7 @@ namespace ProtoBuf.Data.Light
             }
         }
 
-        internal static void Initialize(ProtoBufDataBuffer[] buffers)
+        public static void Initialize(ProtoBufDataBuffer[] buffers)
         {
             for (var i = 0; i < buffers.Length; i++)
             {
@@ -398,29 +398,29 @@ namespace ProtoBuf.Data.Light
         private struct ValueTypeBuffer
         {
             [FieldOffset(0)]
-            internal bool Bool;
+            public bool Bool;
             [FieldOffset(0)]
-            internal byte Byte;
+            public byte Byte;
             [FieldOffset(0)]
-            internal char Char;
+            public char Char;
             [FieldOffset(0)]
-            internal DateTime DateTime;
+            public DateTime DateTime;
             [FieldOffset(0)]
-            internal decimal Decimal;
+            public decimal Decimal;
             [FieldOffset(0)]
-            internal double Double;
+            public double Double;
             [FieldOffset(0)]
-            internal float Float;
+            public float Float;
             [FieldOffset(0)]
-            internal Guid Guid;
+            public Guid Guid;
             [FieldOffset(0)]
-            internal int Int;
+            public int Int;
             [FieldOffset(0)]
-            internal long Long;
+            public long Long;
             [FieldOffset(0)]
-            internal short Short;
+            public short Short;
             [FieldOffset(0)]
-            internal TimeSpan TimeSpan;
+            public TimeSpan TimeSpan;
         }
     }
 }

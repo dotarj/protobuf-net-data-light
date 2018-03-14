@@ -610,7 +610,7 @@ namespace ProtoBuf.Data.Light
 
             if (fieldHeader != expectedFieldHeader)
             {
-                throw new InvalidDataException(string.Format("Field header {0} expected, actual '{1}'.", expectedFieldHeader, fieldHeader));
+                throw new InvalidDataException($"Field header {expectedFieldHeader} expected, actual '{fieldHeader}'.");
             }
 
             return fieldHeader;
@@ -857,7 +857,7 @@ namespace ProtoBuf.Data.Light
 
             if (length < 0)
             {
-                throw new IndexOutOfRangeException(string.Format("Data length '{0}' is less than 0.", length));
+                throw new IndexOutOfRangeException($"Data length '{length}' is less than 0.");
             }
 
             var copyLength = source.LongLength;
@@ -869,12 +869,12 @@ namespace ProtoBuf.Data.Light
 
             if (bufferOffset < 0 || bufferOffset >= buffer.Length)
             {
-                throw new ArgumentOutOfRangeException("bufferOffset", string.Format("Invalid destination buffer (size of {0}) offset: {1}", buffer.Length, bufferOffset));
+                throw new ArgumentOutOfRangeException("bufferOffset", $"Invalid destination buffer (size of {buffer.Length}) offset: {bufferOffset}.");
             }
 
             if (copyLength + bufferOffset > buffer.Length)
             {
-                throw new IndexOutOfRangeException(string.Format("Buffer offset '{1}' plus the elements available '{0}' is greater than the length of the passed in buffer.", copyLength, bufferOffset));
+                throw new IndexOutOfRangeException($"Buffer offset '{bufferOffset}' plus the elements available '{copyLength}' is greater than the length of the passed in buffer.");
             }
 
             if (fieldOffset >= copyLength)
@@ -902,15 +902,8 @@ namespace ProtoBuf.Data.Light
             {
                 if (disposing)
                 {
-                    if (this.protoReader != null)
-                    {
-                        this.protoReader.Dispose();
-                    }
-
-                    if (this.stream != null)
-                    {
-                        this.stream.Dispose();
-                    }
+                    this.protoReader?.Dispose();
+                    this.stream?.Dispose();
                 }
 
                 this.disposed = true;
@@ -935,7 +928,7 @@ namespace ProtoBuf.Data.Light
         {
             if (this.IsClosed)
             {
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.", memberName));
+                throw new InvalidOperationException($"Invalid attempt to call {memberName} when reader is closed.");
             }
         }
 #else
