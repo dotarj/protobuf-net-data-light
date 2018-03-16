@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
+using System.Data;
 using Xunit;
 
 namespace ProtoBuf.Data.Light.Tests
@@ -12,56 +13,77 @@ namespace ProtoBuf.Data.Light.Tests
             [Fact]
             public void ShouldThrowExceptionWhenValuesIsNull()
             {
+                // Arrange
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Close();
+
                 // Assert
-                Assert.Throws<ArgumentNullException>("values", () => this.protoBufDataReader.GetValues(null));
+                Assert.Throws<ArgumentNullException>("values", () => dataReader.GetValues(null));
+            }
+
+            [Fact]
+            public void ShouldThrowExceptionWhenNoData()
+            {
+                // Arrange
+                var dataReader = this.GetDataReader(value: "foo");
+
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetValues(new object[1]));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetString(13));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetValues(new object[1]));
             }
 
             [Fact]
             public void ShouldReturnCorrespondingValues()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var value = "foo";
+                var dataReader = this.GetDataReader(value: value);
 
-                dataReaderMock.Read();
-                this.protoBufDataReader.Read();
+                dataReader.Read();
 
-                var valuesMock = new object[dataReaderMock.FieldCount];
-                var values = new object[this.protoBufDataReader.FieldCount];
+                var result = new object[1];
 
-                dataReaderMock.GetValues(valuesMock);
-                this.protoBufDataReader.GetValues(values);
+                // Act
+                dataReader.GetValues(result);
 
                 // Assert
-                Assert.Equal(string.Join(string.Empty, valuesMock), string.Join(string.Empty, values));
+                Assert.Equal(new[] { value }, result);
             }
 
             [Fact]
             public void ShouldReturnCorrespondingValuesWithSmallerArray()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var dataTable = new DataTable();
 
-                dataReaderMock.Read();
-                this.protoBufDataReader.Read();
+                dataTable.Columns.Add("foo", typeof(int));
+                dataTable.Columns.Add("bar", typeof(int));
 
-                var valuesMock = new object[1];
-                var values = new object[1];
+                dataTable.Rows.Add(1, 2);
 
-                dataReaderMock.GetValues(valuesMock);
-                this.protoBufDataReader.GetValues(values);
+                var dataReader = this.ToProtoBufDataReader(dataTable.CreateDataReader());
+
+                dataReader.Read();
+
+                var result = new object[1];
+
+                // Act
+                dataReader.GetValues(result);
 
                 // Assert
-                Assert.Equal(string.Join(string.Empty, valuesMock), string.Join(string.Empty, values));
+                Assert.Equal(new[] { dataTable.Rows[0][0] }, result);
             }
         }
     }

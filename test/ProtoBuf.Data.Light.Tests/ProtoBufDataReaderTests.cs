@@ -21,7 +21,7 @@ namespace ProtoBuf.Data.Light.Tests
             this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
         }
 
-        private IDataReader GetDataReader<TDataType>(TDataType value)
+        private ProtoBufDataReader GetDataReader<TDataType>(TDataType value)
         {
             var dataTable = new DataTable();
 
@@ -29,15 +29,18 @@ namespace ProtoBuf.Data.Light.Tests
 
             dataTable.Rows.Add(value);
 
-            var dataReader = dataTable.CreateDataReader();
+            return this.ToProtoBufDataReader(dataTable.CreateDataReader());
+        }
 
+        private ProtoBufDataReader ToProtoBufDataReader(IDataReader dataReader)
+        {
             var memoryStream = new MemoryStream();
 
             DataSerializer.Serialize(memoryStream, dataReader);
 
             memoryStream.Position = 0;
 
-            return DataSerializer.Deserialize(memoryStream);
+            return (ProtoBufDataReader)DataSerializer.Deserialize(memoryStream);
         }
     }
 }

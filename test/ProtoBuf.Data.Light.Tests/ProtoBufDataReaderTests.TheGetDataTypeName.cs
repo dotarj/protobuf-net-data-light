@@ -13,28 +13,26 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetDataTypeName(0));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetDataTypeName(0));
             }
 
             [Fact]
             public void ShouldReturnCorrespondingDataTypeName()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var value = "foo";
+                var dataReader = this.GetDataReader(value: value);
 
-                dataReaderMock.Read();
-                this.protoBufDataReader.Read();
+                // Act
+                var result = dataReader.GetDataTypeName(0);
 
                 // Assert
-                Assert.Equal(dataReaderMock.FieldCount, this.protoBufDataReader.FieldCount);
-
-                for (int i = 0; i < this.protoBufDataReader.FieldCount; i++)
-                {
-                    Assert.Equal(dataReaderMock.GetDataTypeName(i), this.protoBufDataReader.GetDataTypeName(i));
-                }
+                Assert.Equal(value.GetType().Name, result);
             }
         }
     }

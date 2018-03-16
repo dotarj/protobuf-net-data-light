@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
+using System.Data;
 using Xunit;
 
 namespace ProtoBuf.Data.Light.Tests
@@ -13,38 +14,41 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetName(0));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetName(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetName(this.protoBufDataReader.FieldCount));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetName(dataReader.FieldCount));
             }
 
             [Fact]
             public void ShouldReturnCorrespondingName()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var dataTable = new DataTable();
 
-                dataReaderMock.Read();
-                this.protoBufDataReader.Read();
+                dataTable.Columns.Add("foo", typeof(int));
+
+                var dataReader = this.ToProtoBufDataReader(dataTable.CreateDataReader());
+
+                // Act
+                var result = dataReader.GetName(0);
 
                 // Assert
-                Assert.Equal(dataReaderMock.FieldCount, this.protoBufDataReader.FieldCount);
-
-                for (int i = 0; i < this.protoBufDataReader.FieldCount; i++)
-                {
-                    Assert.Equal(dataReaderMock.GetName(i), this.protoBufDataReader.GetName(i));
-                }
+                Assert.Equal(dataTable.Columns[0].ColumnName, result);
             }
         }
     }

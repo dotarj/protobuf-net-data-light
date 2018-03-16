@@ -13,38 +13,40 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetFieldType(0));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetFieldType(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetFieldType(this.protoBufDataReader.FieldCount));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetFieldType(dataReader.FieldCount));
             }
 
             [Fact]
             public void ShouldReturnCorrespondingFieldType()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var value = "foo";
+                var dataReader = this.GetDataReader(value: value);
 
-                dataReaderMock.Read();
-                this.protoBufDataReader.Read();
+                dataReader.Read();
+
+                // Act
+                var result = dataReader.GetFieldType(0);
 
                 // Assert
-                Assert.Equal(dataReaderMock.FieldCount, this.protoBufDataReader.FieldCount);
-
-                for (int i = 0; i < this.protoBufDataReader.FieldCount; i++)
-                {
-                    Assert.Equal(dataReaderMock.GetFieldType(i), this.protoBufDataReader.GetFieldType(i));
-                }
+                Assert.Equal(value.GetType(), result);
             }
         }
     }

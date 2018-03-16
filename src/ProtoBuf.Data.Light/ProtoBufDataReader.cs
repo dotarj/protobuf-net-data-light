@@ -577,6 +577,7 @@ namespace ProtoBuf.Data.Light
             Throw.IfNull(values, "values");
 
             this.ThrowIfClosed();
+            this.ThrowIfNoData();
 
             var valuesCount = values.Length < this.columns.Count ? values.Length : this.columns.Count;
 

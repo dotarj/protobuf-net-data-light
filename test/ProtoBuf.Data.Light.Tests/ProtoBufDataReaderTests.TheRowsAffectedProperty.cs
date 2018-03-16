@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
+using System.Data;
+using Moq;
 using Xunit;
 
 namespace ProtoBuf.Data.Light.Tests
@@ -13,20 +15,31 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: "foo");
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.RecordsAffected);
+                Assert.Throws<InvalidOperationException>(() => dataReader.RecordsAffected);
             }
 
             [Fact]
             public void ShouldReturnCorrespondingValues()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var dataReader = Mock.Of<IDataReader>();
+
+                var value = 1;
+
+                Mock.Get(dataReader)
+                    .Setup(_ => _.RecordsAffected)
+                    .Returns(value);
+
+                // Act
+                var result = dataReader.RecordsAffected;
 
                 // Assert
-                Assert.Equal(dataReaderMock.RecordsAffected, this.protoBufDataReader.RecordsAffected);
+                Assert.Equal(value, result);
             }
         }
     }
