@@ -13,40 +13,50 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: float.MinValue);
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetFloat(8));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetFloat(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
+                // Arrange
+                var dataReader = this.GetDataReader(value: float.MinValue);
+
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetFloat(8));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetFloat(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: float.MinValue);
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetFloat(this.protoBufDataReader.FieldCount));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetFloat(dataReader.FieldCount));
             }
 
             [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var value = float.MinValue;
+                var dataReader = this.GetDataReader(value: value);
 
-                this.protoBufDataReader.Read();
-                dataReaderMock.Read();
+                dataReader.Read();
+
+                // Act
+                var result = dataReader.GetFloat(0);
 
                 // Assert
-                Assert.Equal(dataReaderMock.GetFloat(8), this.protoBufDataReader.GetFloat(8));
+                Assert.Equal(value, result);
             }
         }
     }

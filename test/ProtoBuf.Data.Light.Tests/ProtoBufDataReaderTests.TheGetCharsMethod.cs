@@ -13,136 +13,170 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetChars(4, 0, new char[0], 0, 1));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetChars(0, 0, new char[0], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
+                // Arrange
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetChars(4, 0, new char[9], 0, 9));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetChars(0, 0, new char[1], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetChars(this.protoBufDataReader.FieldCount, 0, new char[0], 0, 1));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetChars(dataReader.FieldCount, 0, new char[0], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetChars(4, -1, new char[9], 0, 1));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetChars(0, -1, new char[1], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenLengthIsLessThanZero()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetChars(4, 0, new char[9], 0, -1));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetChars(0, 0, new char[1], 0, -1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsLessThanZero()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetChars(4, 0, new char[9], -1, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => dataReader.GetChars(0, 0, new char[1], -1, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsGreaterThanBufferSize()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetChars(4, 0, new char[9], 10, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => dataReader.GetChars(0, 0, new char[1], 10, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsEqualToBufferSize()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetChars(4, 0, new char[9], 9, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => dataReader.GetChars(0, 0, new char[1], 1, 1));
             }
 
             [Fact]
-            public void ShouldReturnByteArrayLenthWhenBufferIsNull()
+            public void ShouldReturnByteArrayLengthWhenBufferIsNull()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var value = new[] { 'a' };
+                var dataReader = this.GetDataReader(value: value);
+
+                dataReader.Read();
 
                 // Act
-                this.protoBufDataReader.GetChars(4, 0, null, 0, 9);
+                var result = dataReader.GetChars(0, 0, null, 0, 1);
+
+                // Assert
+                Assert.Equal(value.Length, result);
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenByteArrayLengthAndBufferOffsetIsGreaterThanBufferLength()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a', 'b' });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetChars(4, 0, new char[9], 1, 0));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetChars(0, 0, new char[2], 1, 0));
             }
 
             [Fact]
             public void ShouldReturnZeroWhenFieldOffsetIsGreaterThanByteArrayLength()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Act
-                this.protoBufDataReader.GetChars(4, 9, new char[9], 0, 9);
+                var copyLength = dataReader.GetChars(0, 1, new char[1], 0, 1);
+
+                // Assert
+                Assert.Equal(0, copyLength);
             }
 
             [Fact]
             public void ShouldAdjustCopyLengthWhenFieldOffsetAndLengthExceedsByteArrayLength()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { 'a' });
+
+                dataReader.Read();
 
                 // Act
-                this.protoBufDataReader.GetChars(4, 1, new char[9], 0, 9);
+                var copyLength = dataReader.GetChars(0, 0, new char[1], 0, 2);
+
+                // Assert
+                Assert.Equal(1, copyLength);
             }
 
             [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var value = new[] { 'a' };
+                var dataReader = this.GetDataReader(value: value);
 
-                this.protoBufDataReader.Read();
-                dataReaderMock.Read();
+                dataReader.Read();
 
-                var bufferMock = new char[9];
-                var buffer = new char[9];
+                var buffer = new char[1];
+
+                // Act
+                var copyLength = dataReader.GetChars(0, 0, buffer, 0, 1);
 
                 // Assert
-                dataReaderMock.GetChars(4, 0, bufferMock, 0, 9);
-                this.protoBufDataReader.GetChars(4, 0, buffer, 0, 9);
-
-                Assert.Equal(new string(bufferMock), new string(buffer));
+                Assert.Equal(value, buffer);
             }
         }
     }

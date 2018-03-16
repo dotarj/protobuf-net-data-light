@@ -13,40 +13,50 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: decimal.MinValue);
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetDecimal(6));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetDecimal(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
+                // Arrange
+                var dataReader = this.GetDataReader(value: decimal.MinValue);
+
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetDecimal(6));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetDecimal(0));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: decimal.MinValue);
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetDecimal(this.protoBufDataReader.FieldCount));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetDecimal(dataReader.FieldCount));
             }
 
             [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var value = decimal.MinValue;
+                var dataReader = this.GetDataReader(value: value);
 
-                this.protoBufDataReader.Read();
-                dataReaderMock.Read();
+                dataReader.Read();
+
+                // Act
+                var result = dataReader.GetDecimal(0);
 
                 // Assert
-                Assert.Equal(dataReaderMock.GetDecimal(6), this.protoBufDataReader.GetDecimal(6));
+                Assert.Equal(value, result);
             }
         }
     }

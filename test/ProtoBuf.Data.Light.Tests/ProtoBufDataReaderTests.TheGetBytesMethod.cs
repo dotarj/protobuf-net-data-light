@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
-using System.Text;
 using Xunit;
 
 namespace ProtoBuf.Data.Light.Tests
@@ -14,136 +13,170 @@ namespace ProtoBuf.Data.Light.Tests
             public void ShouldThrowExceptionWhenDataReaderIsClosed()
             {
                 // Arrange
-                this.protoBufDataReader.Close();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetBytes(2, 0, new byte[0], 0, 1));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetBytes(0, 0, new byte[0], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenNoData()
             {
+                // Arrange
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetBytes(2, 0, new byte[9], 0, 9));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetBytes(0, 0, new byte[1], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenIndexIsOutOfRange()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetBytes(this.protoBufDataReader.FieldCount, 0, new byte[0], 0, 1));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetBytes(dataReader.FieldCount, 0, new byte[0], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetBytes(2, -1, new byte[9], 0, 1));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetBytes(0, -1, new byte[1], 0, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenLengthIsLessThanZero()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetBytes(2, 0, new byte[9], 0, -1));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetBytes(0, 0, new byte[1], 0, -1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsLessThanZero()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetBytes(2, 0, new byte[9], -1, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => dataReader.GetBytes(0, 0, new byte[1], -1, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsGreaterThanBufferSize()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetBytes(2, 0, new byte[9], 10, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => dataReader.GetBytes(0, 0, new byte[1], 10, 1));
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenBufferOffsetIsEqualToBufferSize()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => this.protoBufDataReader.GetBytes(2, 0, new byte[9], 9, 1));
+                Assert.Throws<ArgumentOutOfRangeException>("bufferOffset", () => dataReader.GetBytes(0, 0, new byte[1], 1, 1));
             }
 
             [Fact]
-            public void ShouldReturnByteArrayLenthWhenBufferIsNull()
+            public void ShouldReturnByteArrayLengthWhenBufferIsNull()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var value = new[] { (byte)0b0010_1010 };
+                var dataReader = this.GetDataReader(value: value);
+
+                dataReader.Read();
 
                 // Act
-                this.protoBufDataReader.GetBytes(2, 0, null, 0, 9);
+                var result = dataReader.GetBytes(0, 0, null, 0, 1);
+
+                // Assert
+                Assert.Equal(value.Length, result);
             }
 
             [Fact]
             public void ShouldThrowExceptionWhenByteArrayLengthAndBufferOffsetIsGreaterThanBufferLength()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1000, (byte)0b1010 });
+
+                dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => this.protoBufDataReader.GetBytes(2, 0, new byte[9], 1, 0));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetBytes(0, 0, new byte[2], 1, 0));
             }
 
             [Fact]
             public void ShouldReturnZeroWhenFieldOffsetIsGreaterThanByteArrayLength()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Act
-                this.protoBufDataReader.GetBytes(2, 9, new byte[9], 0, 9);
+                var copyLength = dataReader.GetBytes(0, 1, new byte[1], 0, 1);
+
+                // Assert
+                Assert.Equal(0, copyLength);
             }
 
             [Fact]
             public void ShouldAdjustCopyLengthWhenFieldOffsetAndLengthExceedsByteArrayLength()
             {
                 // Arrange
-                this.protoBufDataReader.Read();
+                var dataReader = this.GetDataReader(value: new[] { (byte)0b0010_1010 });
+
+                dataReader.Read();
 
                 // Act
-                this.protoBufDataReader.GetBytes(2, 1, new byte[9], 0, 9);
+                var copyLength = dataReader.GetBytes(0, 0, new byte[1], 0, 2);
+
+                // Assert
+                Assert.Equal(1, copyLength);
             }
 
             [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var value = new[] { (byte)0b0010_1010 };
+                var dataReader = this.GetDataReader(value: value);
 
-                this.protoBufDataReader.Read();
-                dataReaderMock.Read();
+                dataReader.Read();
 
-                var bufferMock = new byte[9];
-                var buffer = new byte[9];
+                var buffer = new byte[1];
+
+                // Act
+                var copyLength = dataReader.GetBytes(0, 0, buffer, 0, 1);
 
                 // Assert
-                dataReaderMock.GetBytes(2, 0, bufferMock, 0, 9);
-                this.protoBufDataReader.GetBytes(2, 0, buffer, 0, 9);
-
-                Assert.Equal(Encoding.UTF8.GetString(bufferMock), Encoding.UTF8.GetString(buffer));
+                Assert.Equal(value, buffer);
             }
         }
     }

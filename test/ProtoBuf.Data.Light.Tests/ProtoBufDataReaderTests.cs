@@ -20,5 +20,24 @@ namespace ProtoBuf.Data.Light.Tests
 
             this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
         }
+
+        private IDataReader GetDataReader<TDataType>(TDataType value)
+        {
+            var dataTable = new DataTable();
+
+            dataTable.Columns.Add(typeof(TDataType).Name, typeof(TDataType));
+
+            dataTable.Rows.Add(value);
+
+            var dataReader = dataTable.CreateDataReader();
+
+            var memoryStream = new MemoryStream();
+
+            DataSerializer.Serialize(memoryStream, dataReader);
+
+            memoryStream.Position = 0;
+
+            return DataSerializer.Deserialize(memoryStream);
+        }
     }
 }
