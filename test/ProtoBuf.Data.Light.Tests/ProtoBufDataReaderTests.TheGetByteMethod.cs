@@ -18,7 +18,7 @@ namespace ProtoBuf.Data.Light.Tests
                 dataReader.Close();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(() => this.protoBufDataReader.GetByte(1));
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetByte(1));
             }
 
             [Fact]
@@ -40,7 +40,7 @@ namespace ProtoBuf.Data.Light.Tests
                 dataReader.Read();
 
                 // Assert
-                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetByte(this.protoBufDataReader.FieldCount));
+                Assert.Throws<IndexOutOfRangeException>(() => dataReader.GetByte(dataReader.FieldCount));
             }
 
             [Fact]

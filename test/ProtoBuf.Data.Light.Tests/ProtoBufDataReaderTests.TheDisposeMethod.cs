@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Arjen Post. See LICENSE and NOTICE in the project root for license information.
 
 using System;
+using System.Data;
 using System.IO;
 using Xunit;
 
@@ -11,20 +12,23 @@ namespace ProtoBuf.Data.Light.Tests
         public class TheDisposeMethod : ProtoBufDataReaderTests
         {
             [Fact]
-            public void ShouldThrowExceptionWhenDataReaderIsDisposed()
+            public void ShouldDisposeStream()
             {
                 // Arrange
-                var dataReaderMock = new DataReaderMock(false);
+                var dataTable = new DataTable();
+
+                dataTable.Columns.Add("foo", typeof(int));
+
                 var memoryStream = new MemoryStream();
 
-                DataSerializer.Serialize(memoryStream, dataReaderMock);
+                DataSerializer.Serialize(memoryStream, dataTable.CreateDataReader());
 
                 memoryStream.Position = 0;
 
-                this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
+                var dataReader = (ProtoBufDataReader)DataSerializer.Deserialize(memoryStream);
 
                 // Act
-                this.protoBufDataReader.Dispose();
+                dataReader.Dispose();
 
                 // Assert
                 Assert.Throws<ObjectDisposedException>(() => memoryStream.Position = 0);

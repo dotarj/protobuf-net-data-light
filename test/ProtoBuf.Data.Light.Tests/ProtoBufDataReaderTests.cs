@@ -7,20 +7,6 @@ namespace ProtoBuf.Data.Light.Tests
 {
     public partial class ProtoBufDataReaderTests
     {
-        private IDataReader protoBufDataReader;
-
-        public ProtoBufDataReaderTests()
-        {
-            var dataReaderMock = new DataReaderMock(false);
-            var memoryStream = new MemoryStream();
-
-            DataSerializer.Serialize(memoryStream, dataReaderMock);
-
-            memoryStream.Position = 0;
-
-            this.protoBufDataReader = DataSerializer.Deserialize(memoryStream);
-        }
-
         private ProtoBufDataReader GetDataReader<TDataType>(TDataType value)
         {
             var dataTable = new DataTable();
