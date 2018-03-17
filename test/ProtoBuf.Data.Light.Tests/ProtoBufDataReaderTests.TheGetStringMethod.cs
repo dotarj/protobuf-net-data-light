@@ -42,6 +42,18 @@ namespace ProtoBuf.Data.Light.Tests
             }
 
             [Fact]
+            public void ShouldThrowExceptionWhenIsNull()
+            {
+                // Arrange
+                var dataReader = this.GetDataReader(value: (string)null);
+
+                dataReader.Read();
+
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetString(0));
+            }
+
+            [Fact]
             public void ShouldReturnCorrespondingValue()
             {
                 // Arrange

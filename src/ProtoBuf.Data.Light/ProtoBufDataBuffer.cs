@@ -42,6 +42,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Bool)
                 {
                     return this.valueTypeBuffer.Bool;
@@ -62,6 +64,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Byte)
                 {
                     return this.valueTypeBuffer.Byte;
@@ -82,6 +86,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.ByteArray)
                 {
                     return (byte[])this.referenceTypeBuffer;
@@ -102,6 +108,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Char)
                 {
                     return this.valueTypeBuffer.Char;
@@ -122,6 +130,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.CharArray)
                 {
                     return (char[])this.referenceTypeBuffer;
@@ -142,6 +152,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.DateTime)
                 {
                     return this.valueTypeBuffer.DateTime;
@@ -162,6 +174,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Decimal)
                 {
                     return this.valueTypeBuffer.Decimal;
@@ -182,6 +196,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Double)
                 {
                     return this.valueTypeBuffer.Double;
@@ -202,6 +218,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Float)
                 {
                     return this.valueTypeBuffer.Float;
@@ -222,6 +240,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Guid)
                 {
                     return this.valueTypeBuffer.Guid;
@@ -242,6 +262,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Int)
                 {
                     return this.valueTypeBuffer.Int;
@@ -262,6 +284,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Long)
                 {
                     return this.valueTypeBuffer.Long;
@@ -282,6 +306,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.Short)
                 {
                     return this.valueTypeBuffer.Short;
@@ -302,6 +328,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.String)
                 {
                     return (string)this.referenceTypeBuffer;
@@ -322,6 +350,8 @@ namespace ProtoBuf.Data.Light
         {
             get
             {
+                this.ThrowIfNull();
+
                 if (this.bufferType == BufferType.TimeSpan)
                 {
                     return this.valueTypeBuffer.TimeSpan;
@@ -392,6 +422,14 @@ namespace ProtoBuf.Data.Light
             this.referenceTypeBuffer = null;
             this.IsNull = true;
             this.bufferType = BufferType.Empty;
+        }
+
+        private void ThrowIfNull()
+        {
+            if (this.IsNull)
+            {
+                throw new InvalidOperationException("Data is Null. This method or property cannot be called on Null values.");
+            }
         }
 
         [StructLayout(LayoutKind.Explicit)]

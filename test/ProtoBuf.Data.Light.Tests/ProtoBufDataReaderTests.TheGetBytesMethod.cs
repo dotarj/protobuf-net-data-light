@@ -44,6 +44,18 @@ namespace ProtoBuf.Data.Light.Tests
             }
 
             [Fact]
+            public void ShouldThrowExceptionWhenIsNull()
+            {
+                // Arrange
+                var dataReader = this.GetDataReader(value: (string)null);
+
+                dataReader.Read();
+
+                // Assert
+                Assert.Throws<InvalidOperationException>(() => dataReader.GetBytes(0, 0, new byte[1], 0, 1));
+            }
+
+            [Fact]
             public void ShouldThrowExceptionWhenFieldOffsetIsLessThanZero()
             {
                 // Arrange
